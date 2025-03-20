@@ -1,8 +1,7 @@
 title: Poe Creator Guide
 description: Documentation scraped from creator.poe.com/docs
-baseurl: "poe" # leave empty if deploying to the root
-url: "https://garethpaul.github.io" # your GitHub Pages URL
+baseurl: "/poe-creator-guide" # Use the repository name as the base URL
+url: "https://garethpaul.github.io" # Your GitHub Pages URL
 
-# Build settings
 markdown: kramdown
-theme: minimal
+theme: minima
