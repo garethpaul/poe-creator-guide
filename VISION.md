@@ -40,7 +40,7 @@ Creator documentation can influence production bot behavior. The mirror should
 avoid stale or unattributed guidance and should make source freshness visible to
 readers.
 
-## What We Will Not Merge For Now
+## What We Will Not Merge (For Now)
 
 - Unattributed copied docs
 - Silent generated rewrites
