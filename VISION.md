@@ -36,6 +36,11 @@ Contribution rules:
 
 ## Security And Responsible Use
 
+Canonical security policy and reporting:
+
+- [`SECURITY.md`](SECURITY.md)
+
+
 Creator documentation can influence production bot behavior. The mirror should
 avoid stale or unattributed guidance and should make source freshness visible to
 readers.
