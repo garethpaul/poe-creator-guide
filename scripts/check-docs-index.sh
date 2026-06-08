@@ -3,6 +3,7 @@ set -eu
 
 missing=0
 count=0
+link_count=0
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -42,8 +43,27 @@ for url in $urls; do
   fi
 done
 
+for file in index.md docs/*.md; do
+  [ -f "$file" ] || continue
+
+  links=$(grep -Eo '\(/docs/[A-Za-z0-9._/-]+(\.html)?(#[A-Za-z0-9._~:%/-]+)?\)' "$file" || true)
+  for link in $links; do
+    ref=${link#(}
+    ref=${ref%)}
+    slug=${ref#/docs/}
+    slug=${slug%%#*}
+    slug=${slug%.html}
+    path="docs/$slug.md"
+    link_count=$((link_count + 1))
+
+    if [ ! -f "$path" ]; then
+      fail "$file references missing local doc: $ref ($path)"
+    fi
+  done
+done
+
 if [ "$missing" -ne 0 ]; then
   exit 1
 fi
 
-printf 'Docs index check passed for %s mirrored pages.\n' "$count"
+printf 'Docs index check passed for %s mirrored pages and %s local doc links.\n' "$count" "$link_count"

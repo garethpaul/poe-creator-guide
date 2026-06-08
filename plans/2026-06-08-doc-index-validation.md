@@ -25,6 +25,5 @@ placeholder even though `llms.txt` listed the mirrored source pages.
 
 ## Follow-Up Candidates
 
-- Validate in-repo Markdown links and anchors.
 - Record mirror generation timestamps.
 - Add source freshness metadata for each mirrored page.

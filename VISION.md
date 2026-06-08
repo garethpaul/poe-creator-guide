@@ -17,7 +17,7 @@ Priority:
 
 - Preserve the generated docs under `docs/`
 - Keep `llms.txt` and the index aligned with available pages
-- Maintain `make verify` as the local docs-index validation gate
+- Maintain `make verify` as the docs-index and local-link validation gate
 - Avoid hand-editing generated pages without noting the source
 - Keep source links visible for each document
 
