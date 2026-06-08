@@ -28,6 +28,10 @@ for path in docs/*.md; do
   if ! grep -Fq "($local_url)" index.md && ! grep -Fq "($local_url.html)" index.md; then
     fail "index.md missing local link for $path: $local_url"
   fi
+
+  if ! grep -Fq "$source_url" index.md; then
+    fail "index.md missing source URL for $path: $source_url"
+  fi
 done
 
 if [ "$count" -eq 0 ]; then
