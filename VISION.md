@@ -17,6 +17,7 @@ Priority:
 
 - Preserve the generated docs under `docs/`
 - Keep `llms.txt` and the index aligned with available pages
+- Maintain `make verify` as the local docs-index validation gate
 - Avoid hand-editing generated pages without noting the source
 - Keep source links visible for each document
 
@@ -24,7 +25,7 @@ Next priorities:
 
 - Add a refresh script or documented generation process
 - Record source URLs and generation timestamps
-- Add a simple link and front-matter validation pass
+- Expand validation beyond index coverage into front matter and source freshness
 - Clarify which files are generated versus maintained by hand
 
 Contribution rules:

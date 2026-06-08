@@ -12,22 +12,29 @@ This README is based on the checked-in source, manifests, scripts, and repositor
 ## Repository Contents
 
 - `README.md` - project overview and local usage notes
+- `CHANGES.md` - notable maintenance changes
+- `Makefile` - local verification entry points
 - `docs` - source or example code
+- `index.md` and `index.html` - local documentation entry points
+- `llms.txt` - LLM-oriented source index
+- `plans` - completed maintenance plans
+- `scripts` - deterministic docs validation checks
 - `SECURITY.md` - security reporting and disclosure guidance
 - `VISION.md` - project direction and maintenance guardrails
 
 Additional scan context:
 
-- Source directories: docs
-- Dependency and build manifests: none detected
-- Entry points or build surfaces: none detected
-- Test-looking files: docs/poe-protocol-specification.md
+- Source directories: docs, scripts
+- Dependency and build manifests: Makefile
+- Entry points or build surfaces: Makefile, index.html, index.md, llms.txt
+- Test-looking files: scripts/check-docs-index.sh, docs/poe-protocol-specification.md
 
 ## Getting Started
 
 ### Prerequisites
 
 - Git
+- POSIX shell and `make`
 
 ### Setup
 
@@ -40,11 +47,13 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 ## Running or Using the Project
 
-- No single runtime entry point was identified. Start by reading the source files and manifests listed above.
+- Open `index.md` for the local Markdown index, or `index.html` for the GitHub Pages redirect.
+- Read `llms.txt` for source URLs and short page summaries.
 
 ## Testing and Verification
 
-- No dedicated automated test command was identified from the checked-in files. Verify changes by running the relevant build or manually exercising the sample.
+- Run `make verify` before committing documentation index changes.
+- The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
