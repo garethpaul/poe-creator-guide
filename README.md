@@ -52,7 +52,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 ## Testing and Verification
 
-- Run `make verify` before committing documentation index changes.
+- Run `make check` or `make verify` before committing documentation index changes.
 - The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, and that local `/docs/<slug>` links point to checked-in pages.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
