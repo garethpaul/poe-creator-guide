@@ -4,6 +4,7 @@ set -eu
 missing=0
 count=0
 link_count=0
+plan_count=0
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -31,6 +32,19 @@ done
 
 if [ "$count" -eq 0 ]; then
   fail "no Markdown documents found under docs/"
+fi
+
+for plan in docs/plans/*.md; do
+  [ -f "$plan" ] || continue
+  plan_count=$((plan_count + 1))
+
+  if ! grep -Fqi "status: completed" "$plan"; then
+    fail "$plan must record status: completed"
+  fi
+done
+
+if [ "$plan_count" -eq 0 ]; then
+  fail "no completed maintenance plans found under docs/plans/"
 fi
 
 urls=$(grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' llms.txt | sort -u || true)
@@ -66,4 +80,4 @@ if [ "$missing" -ne 0 ]; then
   exit 1
 fi
 
-printf 'Docs index check passed for %s mirrored pages and %s local doc links.\n' "$count" "$link_count"
+printf 'Docs index check passed for %s mirrored pages, %s local doc links, and %s docs plans.\n' "$count" "$link_count" "$plan_count"

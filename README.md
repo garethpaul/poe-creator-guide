@@ -17,7 +17,8 @@ This README is based on the checked-in source, manifests, scripts, and repositor
 - `docs` - source or example code
 - `index.md` and `index.html` - local documentation entry points
 - `llms.txt` - LLM-oriented source index
-- `plans` - completed maintenance plans
+- `docs/plans` - canonical completed maintenance plans
+- `plans` - earlier completed maintenance plans retained for history
 - `scripts` - deterministic docs validation checks
 - `SECURITY.md` - security reporting and disclosure guidance
 - `VISION.md` - project direction and maintenance guardrails
@@ -53,7 +54,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 ## Testing and Verification
 
 - Run `make check` or `make verify` before committing documentation index changes.
-- The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, and that local `/docs/<slug>` links point to checked-in pages.
+- The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, local `/docs/<slug>` links point to checked-in pages, and `docs/plans/` contains a completed maintenance plan.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -74,8 +75,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
 - See `VISION.md` for project direction and contribution guardrails.
 - See `CHANGES.md` for maintenance history.
-- See `plans/2026-06-08-local-doc-link-validation.md` for the current local
-  link validation baseline.
+- See `docs/plans/2026-06-08-docs-plan-location-baseline.md` for the canonical
+  docs-plan baseline and `plans/` for earlier historical plans.
 
 ## Contributing
 
