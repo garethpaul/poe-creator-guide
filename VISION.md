@@ -20,13 +20,15 @@ Priority:
 - Keep `llms.txt` titles unique enough for LLM-oriented consumption
 - Keep `llms.txt` source URLs unique so mirrored source pages are not listed
   with conflicting summaries
-- Maintain `make check` and `make verify` as the docs-index, source-link, and local-link validation gates
+- Maintain `make check`, `make verify`, and `make build` as the docs-index,
+  source-link, and local-link validation gates
 - Record new maintenance plans under `docs/plans/`
 - Avoid hand-editing generated pages without noting the source
 - Keep per-page source attribution comments in mirrored docs
 - Keep each mirrored page's source attribution as the first line
 - Keep source links visible for each document
 - Keep each index entry's local page link paired with its canonical source URL
+- Keep each source URL in the index tied to a checked-in mirrored page
 - Keep the HTML redirect entry point tied to a checked-in mirrored document
 
 Next priorities:

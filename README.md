@@ -54,6 +54,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 ## Testing and Verification
 
 - Run `make check` or `make verify` before committing documentation index changes.
+- Run `make build` for the static documentation build gate; it uses the same
+  offline docs validator as `make lint`.
 - The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, each mirrored page has a source attribution comment, each page's source URL remains visible in `index.md`, each index entry keeps the local page link paired with its canonical source link, local `/docs/<slug>` links point to checked-in pages, and `docs/plans/` contains a completed maintenance plan.
 - The source attribution guard requires exactly one source comment as the first
   line of each mirrored page.
@@ -65,6 +67,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   point cannot drift to a missing mirrored document.
 - The same gate keeps local index links paired with their canonical Poe source
   links so source attributions cannot be shuffled across pages.
+- The same gate rejects Poe source URLs in `index.md` that do not resolve to a
+  checked-in mirrored page.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -95,6 +99,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   duplicate source URL guard.
 - See `docs/plans/2026-06-09-index-source-pair-validation.md` for the
   local/source link pairing guard in `index.md`.
+- See `docs/plans/2026-06-09-index-source-url-validation.md` for the reverse
+  source-URL guard and static `make build` gate.
 - See `docs/plans/2026-06-09-page-source-attribution.md` for the
   per-page source attribution guard.
 - See `docs/plans/2026-06-09-first-line-source-attribution.md` for the

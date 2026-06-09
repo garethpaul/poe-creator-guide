@@ -10,6 +10,7 @@ source_attribution_count=0
 index_source_pair_count=0
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
+index_source_url_plan="docs/plans/2026-06-09-index-source-url-validation.md"
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -83,6 +84,10 @@ if [ ! -f "$index_source_pair_plan" ]; then
   fail "$index_source_pair_plan is missing"
 fi
 
+if [ ! -f "$index_source_url_plan" ]; then
+  fail "$index_source_url_plan is missing"
+fi
+
 urls=$(grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' llms.txt | sort -u || true)
 for url in $urls; do
   slug=${url##*/}
@@ -90,6 +95,16 @@ for url in $urls; do
 
   if [ ! -f "$path" ]; then
     fail "llms.txt references $url but $path is missing"
+  fi
+done
+
+index_source_urls=$(grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' index.md | sort -u || true)
+for url in $index_source_urls; do
+  slug=${url##*/}
+  path="docs/$slug.md"
+
+  if [ ! -f "$path" ]; then
+    fail "index.md references $url but $path is missing"
   fi
 done
 
@@ -170,4 +185,4 @@ if [ "$missing" -ne 0 ]; then
   exit 1
 fi
 
-printf 'Docs index check passed for %s mirrored pages, %s source attributions, %s paired index source links, %s unique llms source URLs, %s local doc links, %s HTML redirect links, and %s docs plans.\n' "$count" "$source_attribution_count" "$index_source_pair_count" "$(printf '%s\n' "$urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$link_count" "$redirect_count" "$plan_count"
+printf 'Docs index check passed for %s mirrored pages, %s source attributions, %s paired index source links, %s unique llms source URLs, %s index source URLs, %s local doc links, %s HTML redirect links, and %s docs plans.\n' "$count" "$source_attribution_count" "$index_source_pair_count" "$(printf '%s\n' "$urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$(printf '%s\n' "$index_source_urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$link_count" "$redirect_count" "$plan_count"

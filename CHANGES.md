@@ -1,5 +1,11 @@
 # Changes
 
+## 2026-06-09
+
+- Added reverse source-URL validation so every Poe source URL in `index.md`
+  maps to a checked-in mirrored page.
+- Added a static `make build` gate for docs-only verification.
+
 ## 2026-06-08
 
 - Added `llms.txt` duplicate source URL validation so each mirrored source page

@@ -43,6 +43,8 @@ page's source attribution comment intact as the first line so reviewers can
 trace guidance back to the canonical Poe creator docs before applying it.
 Keep each local index entry paired with its canonical Poe source URL so source
 context cannot be shuffled across mirrored pages.
+Reject source URLs in the local index that no longer map to checked-in mirrored
+pages so readers are not sent to unreviewed or stale guidance.
 
 ## Dependency and Supply Chain Security
 
