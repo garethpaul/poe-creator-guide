@@ -4,6 +4,8 @@
 
 - Required each mirrored page's canonical source URL to remain visible in
   `index.md` during offline docs validation.
+- Added `index.html` redirect validation so the GitHub Pages entry point must
+  target a checked-in mirrored document.
 - Added reverse local-link validation so `/docs/<slug>` links in the index and
   mirrored pages must point to checked-in docs.
 - Added a canonical `docs/plans/` baseline and wired the docs check to require

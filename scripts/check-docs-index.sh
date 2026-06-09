@@ -4,6 +4,7 @@ set -eu
 missing=0
 count=0
 link_count=0
+redirect_count=0
 plan_count=0
 
 fail() {
@@ -80,8 +81,29 @@ for file in index.md docs/*.md; do
   done
 done
 
+if [ ! -f index.html ]; then
+  fail "index.html is missing"
+else
+  html_refs=$(grep -Eo '/docs/[A-Za-z0-9._/-]+(\.html)?(#[A-Za-z0-9._~:%/-]+)?' index.html || true)
+  if [ -z "$html_refs" ]; then
+    fail "index.html must link to at least one local docs page"
+  fi
+
+  for ref in $html_refs; do
+    slug=${ref#/docs/}
+    slug=${slug%%#*}
+    slug=${slug%.html}
+    path="docs/$slug.md"
+    redirect_count=$((redirect_count + 1))
+
+    if [ ! -f "$path" ]; then
+      fail "index.html references missing redirect doc: $ref ($path)"
+    fi
+  done
+fi
+
 if [ "$missing" -ne 0 ]; then
   exit 1
 fi
 
-printf 'Docs index check passed for %s mirrored pages, %s local doc links, and %s docs plans.\n' "$count" "$link_count" "$plan_count"
+printf 'Docs index check passed for %s mirrored pages, %s local doc links, %s HTML redirect links, and %s docs plans.\n' "$count" "$link_count" "$redirect_count" "$plan_count"

@@ -55,6 +55,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 - Run `make check` or `make verify` before committing documentation index changes.
 - The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, each page's source URL remains visible in `index.md`, local `/docs/<slug>` links point to checked-in pages, and `docs/plans/` contains a completed maintenance plan.
+- The same gate validates `index.html` redirect links so the GitHub Pages entry
+  point cannot drift to a missing mirrored document.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -77,6 +79,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - See `CHANGES.md` for maintenance history.
 - See `docs/plans/2026-06-08-docs-plan-location-baseline.md` for the canonical
   docs-plan baseline and `plans/` for earlier historical plans.
+- See `docs/plans/2026-06-09-index-html-redirect-validation.md` for the
+  `index.html` redirect validation guard.
 
 ## Contributing
 

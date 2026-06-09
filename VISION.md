@@ -21,6 +21,7 @@ Priority:
 - Record new maintenance plans under `docs/plans/`
 - Avoid hand-editing generated pages without noting the source
 - Keep source links visible for each document
+- Keep the HTML redirect entry point tied to a checked-in mirrored document
 
 Next priorities:
 
