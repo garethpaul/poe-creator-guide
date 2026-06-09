@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/best-practices-image-generation-bots -->
+
 getting started
 ---------------
 

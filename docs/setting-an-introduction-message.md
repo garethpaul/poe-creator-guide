@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/setting-an-introduction-message -->
+
 getting started
 ---------------
 

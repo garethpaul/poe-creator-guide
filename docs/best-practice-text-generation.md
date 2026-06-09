@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/best-practice-text-generation -->
+
 getting started
 ---------------
 

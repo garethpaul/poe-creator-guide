@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/rendering-an-image-in-the-response -->
+
 getting started
 ---------------
 

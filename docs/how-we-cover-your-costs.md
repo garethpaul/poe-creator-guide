@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/how-we-cover-your-costs -->
+
 getting started
 ---------------
 

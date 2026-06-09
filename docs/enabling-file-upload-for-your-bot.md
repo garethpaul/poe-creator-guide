@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/enabling-file-upload-for-your-bot -->
+
 getting started
 ---------------
 

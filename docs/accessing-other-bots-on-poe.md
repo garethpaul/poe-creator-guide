@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/accessing-other-bots-on-poe -->
+
 ## getting started
 
 - [Poe Creator Guide](/docs/welcome-to-poe-for-creators)

@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/recommended-bot-settings -->
+
 getting started
 ---------------
 

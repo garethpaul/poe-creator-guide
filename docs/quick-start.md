@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/quick-start -->
+
 getting started
 ---------------
 

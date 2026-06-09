@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/how-to-create-a-prompt-bot -->
+
 getting started
 ---------------
 

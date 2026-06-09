@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/how-to-get-distribution -->
+
 getting started
 ---------------
 

@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/best-practices-for-video-generation-prompts -->
+
 getting started
 ---------------
 

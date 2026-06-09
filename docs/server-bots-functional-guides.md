@@ -1,3 +1,5 @@
+<!-- Source: https://creator.poe.com/docs/server-bots-functional-guides -->
+
 getting started
 ---------------
 

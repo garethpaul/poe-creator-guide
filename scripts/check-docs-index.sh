@@ -6,6 +6,7 @@ count=0
 link_count=0
 redirect_count=0
 plan_count=0
+source_attribution_count=0
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -20,7 +21,14 @@ for path in docs/*.md; do
   count=$((count + 1))
 
   source_url="https://creator.poe.com/docs/$slug"
+  source_comment="<!-- Source: $source_url -->"
   local_url="/docs/$slug"
+
+  if ! grep -Fq "$source_comment" "$path"; then
+    fail "$path missing source attribution comment: $source_comment"
+  else
+    source_attribution_count=$((source_attribution_count + 1))
+  fi
 
   if ! grep -Fq "$source_url" llms.txt; then
     fail "llms.txt missing source URL for $path: $source_url"
@@ -123,4 +131,4 @@ if [ "$missing" -ne 0 ]; then
   exit 1
 fi
 
-printf 'Docs index check passed for %s mirrored pages, %s local doc links, %s HTML redirect links, and %s docs plans.\n' "$count" "$link_count" "$redirect_count" "$plan_count"
+printf 'Docs index check passed for %s mirrored pages, %s source attributions, %s local doc links, %s HTML redirect links, and %s docs plans.\n' "$count" "$source_attribution_count" "$link_count" "$redirect_count" "$plan_count"
