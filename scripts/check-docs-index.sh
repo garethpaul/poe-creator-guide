@@ -7,6 +7,7 @@ link_count=0
 redirect_count=0
 plan_count=0
 source_attribution_count=0
+llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -65,6 +66,10 @@ if [ "$plan_count" -eq 0 ]; then
   fail "no completed maintenance plans found under docs/plans/"
 fi
 
+if [ ! -f "$llms_url_plan" ]; then
+  fail "$llms_url_plan is missing"
+fi
+
 urls=$(grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' llms.txt | sort -u || true)
 for url in $urls; do
   slug=${url##*/}
@@ -74,6 +79,22 @@ for url in $urls; do
     fail "llms.txt references $url but $path is missing"
   fi
 done
+
+duplicate_urls=$(
+  grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' llms.txt |
+    sort |
+    uniq -d || true
+)
+
+if [ -n "$duplicate_urls" ]; then
+  old_ifs=$IFS
+  IFS='
+'
+  for url in $duplicate_urls; do
+    fail "llms.txt duplicate source URL: $url"
+  done
+  IFS=$old_ifs
+fi
 
 duplicate_titles=$(
   grep -E '^- \[[^]]+\]\(https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+\)' llms.txt |
@@ -136,4 +157,4 @@ if [ "$missing" -ne 0 ]; then
   exit 1
 fi
 
-printf 'Docs index check passed for %s mirrored pages, %s source attributions, %s local doc links, %s HTML redirect links, and %s docs plans.\n' "$count" "$source_attribution_count" "$link_count" "$redirect_count" "$plan_count"
+printf 'Docs index check passed for %s mirrored pages, %s source attributions, %s unique llms source URLs, %s local doc links, %s HTML redirect links, and %s docs plans.\n' "$count" "$source_attribution_count" "$(printf '%s\n' "$urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$link_count" "$redirect_count" "$plan_count"

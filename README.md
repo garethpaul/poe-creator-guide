@@ -59,6 +59,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   line of each mirrored page.
 - The same gate requires unique visible `llms.txt` titles so similarly named
   source pages stay distinguishable for local browsing and LLM-oriented use.
+- The same gate requires unique `llms.txt` source URLs so a mirrored source
+  page cannot be listed twice with conflicting summaries.
 - The same gate validates `index.html` redirect links so the GitHub Pages entry
   point cannot drift to a missing mirrored document.
 
@@ -87,6 +89,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   `index.html` redirect validation guard.
 - See `docs/plans/2026-06-09-llms-title-disambiguation.md` for the
   `llms.txt` duplicate-title guard.
+- See `docs/plans/2026-06-09-llms-url-deduplication.md` for the `llms.txt`
+  duplicate source URL guard.
 - See `docs/plans/2026-06-09-page-source-attribution.md` for the
   per-page source attribution guard.
 - See `docs/plans/2026-06-09-first-line-source-attribution.md` for the

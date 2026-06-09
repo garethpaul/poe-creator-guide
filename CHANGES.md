@@ -2,6 +2,8 @@
 
 ## 2026-06-08
 
+- Added `llms.txt` duplicate source URL validation so each mirrored source page
+  appears once in the LLM-oriented index.
 - Required each mirrored page's canonical source URL to remain visible in
   `index.md` during offline docs validation.
 - Added per-page source attribution comments and validation for mirrored docs.
