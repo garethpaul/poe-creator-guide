@@ -17,6 +17,7 @@ Priority:
 
 - Preserve the generated docs under `docs/`
 - Keep `llms.txt` and the index aligned with available pages
+- Keep `llms.txt` titles unique enough for LLM-oriented consumption
 - Maintain `make check` and `make verify` as the docs-index, source-link, and local-link validation gates
 - Record new maintenance plans under `docs/plans/`
 - Avoid hand-editing generated pages without noting the source

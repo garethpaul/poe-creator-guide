@@ -62,6 +62,23 @@ for url in $urls; do
   fi
 done
 
+duplicate_titles=$(
+  grep -E '^- \[[^]]+\]\(https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+\)' llms.txt |
+    sed 's/^- \[\([^]]*\)\].*/\1/' |
+    sort |
+    uniq -d || true
+)
+
+if [ -n "$duplicate_titles" ]; then
+  old_ifs=$IFS
+  IFS='
+'
+  for title in $duplicate_titles; do
+    fail "llms.txt duplicate doc title: $title"
+  done
+  IFS=$old_ifs
+fi
+
 for file in index.md docs/*.md; do
   [ -f "$file" ] || continue
 
