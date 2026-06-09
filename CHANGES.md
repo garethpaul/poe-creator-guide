@@ -4,6 +4,7 @@
 
 - Added reverse source-URL validation so every Poe source URL in `index.md`
   maps to a checked-in mirrored page.
+- Added duplicate local/source entry validation for `index.md`.
 - Added a static `make build` gate for docs-only verification.
 
 ## 2026-06-08

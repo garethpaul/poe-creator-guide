@@ -11,6 +11,7 @@ index_source_pair_count=0
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
 index_source_url_plan="docs/plans/2026-06-09-index-source-url-validation.md"
+index_dedup_plan="docs/plans/2026-06-09-index-entry-deduplication.md"
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -88,6 +89,10 @@ if [ ! -f "$index_source_url_plan" ]; then
   fail "$index_source_url_plan is missing"
 fi
 
+if [ ! -f "$index_dedup_plan" ]; then
+  fail "$index_dedup_plan is missing"
+fi
+
 urls=$(grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' llms.txt | sort -u || true)
 for url in $urls; do
   slug=${url##*/}
@@ -107,6 +112,39 @@ for url in $index_source_urls; do
     fail "index.md references $url but $path is missing"
   fi
 done
+
+duplicate_index_source_urls=$(
+  grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' index.md |
+    sort |
+    uniq -d || true
+)
+
+if [ -n "$duplicate_index_source_urls" ]; then
+  old_ifs=$IFS
+  IFS='
+'
+  for url in $duplicate_index_source_urls; do
+    fail "index.md duplicate source URL: $url"
+  done
+  IFS=$old_ifs
+fi
+
+duplicate_index_local_refs=$(
+  grep -Eo '\(/docs/[A-Za-z0-9._/-]+(\.html)?(#[A-Za-z0-9._~:%/-]+)?\)' index.md |
+    sed 's/^(\(.*\))$/\1/; s/#.*$//; s/\.html$//' |
+    sort |
+    uniq -d || true
+)
+
+if [ -n "$duplicate_index_local_refs" ]; then
+  old_ifs=$IFS
+  IFS='
+'
+  for ref in $duplicate_index_local_refs; do
+    fail "index.md duplicate local docs link: $ref"
+  done
+  IFS=$old_ifs
+fi
 
 duplicate_urls=$(
   grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' llms.txt |

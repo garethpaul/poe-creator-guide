@@ -69,6 +69,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   links so source attributions cannot be shuffled across pages.
 - The same gate rejects Poe source URLs in `index.md` that do not resolve to a
   checked-in mirrored page.
+- The same gate rejects duplicate local or source entries in `index.md` so the
+  table of contents cannot list a mirrored page twice with conflicting context.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -101,6 +103,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   local/source link pairing guard in `index.md`.
 - See `docs/plans/2026-06-09-index-source-url-validation.md` for the reverse
   source-URL guard and static `make build` gate.
+- See `docs/plans/2026-06-09-index-entry-deduplication.md` for the duplicate
+  `index.md` entry guard.
 - See `docs/plans/2026-06-09-page-source-attribution.md` for the
   per-page source attribution guard.
 - See `docs/plans/2026-06-09-first-line-source-attribution.md` for the

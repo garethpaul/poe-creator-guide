@@ -29,6 +29,7 @@ Priority:
 - Keep source links visible for each document
 - Keep each index entry's local page link paired with its canonical source URL
 - Keep each source URL in the index tied to a checked-in mirrored page
+- Keep duplicate local or source entries out of the local index
 - Keep the HTML redirect entry point tied to a checked-in mirrored document
 
 Next priorities:

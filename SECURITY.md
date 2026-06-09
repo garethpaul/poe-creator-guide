@@ -45,6 +45,8 @@ Keep each local index entry paired with its canonical Poe source URL so source
 context cannot be shuffled across mirrored pages.
 Reject source URLs in the local index that no longer map to checked-in mirrored
 pages so readers are not sent to unreviewed or stale guidance.
+Reject duplicate local or source entries in the local index so mirrored pages
+cannot be listed twice with conflicting context.
 
 ## Dependency and Supply Chain Security
 
