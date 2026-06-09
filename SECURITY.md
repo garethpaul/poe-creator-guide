@@ -38,7 +38,9 @@ Helpful reports include:
 
 For web services, APIs, sockets, or scraping workflows, prioritize reports involving authentication bypass, authorization errors, injection, server-side request forgery, unsafe deserialization, credential leakage, data exposure, or denial-of-service conditions. Use test accounts and minimal proof-of-concept traffic only.
 
-Mirrored documentation can shape production bot behavior. Keep each mirrored page's source attribution comment intact so reviewers can trace guidance back to the canonical Poe creator docs before applying it.
+Mirrored documentation can shape production bot behavior. Keep each mirrored
+page's source attribution comment intact as the first line so reviewers can
+trace guidance back to the canonical Poe creator docs before applying it.
 
 ## Dependency and Supply Chain Security
 

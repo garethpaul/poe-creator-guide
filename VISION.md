@@ -22,6 +22,7 @@ Priority:
 - Record new maintenance plans under `docs/plans/`
 - Avoid hand-editing generated pages without noting the source
 - Keep per-page source attribution comments in mirrored docs
+- Keep each mirrored page's source attribution as the first line
 - Keep source links visible for each document
 - Keep the HTML redirect entry point tied to a checked-in mirrored document
 
@@ -29,7 +30,7 @@ Next priorities:
 
 - Add a refresh script or documented generation process
 - Record generation timestamps
-- Expand validation beyond index coverage into front matter and source freshness
+- Expand validation beyond attribution placement into front matter and source freshness
 - Clarify which files are generated versus maintained by hand
 
 Contribution rules:

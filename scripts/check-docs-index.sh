@@ -24,8 +24,13 @@ for path in docs/*.md; do
   source_comment="<!-- Source: $source_url -->"
   local_url="/docs/$slug"
 
-  if ! grep -Fq "$source_comment" "$path"; then
-    fail "$path missing source attribution comment: $source_comment"
+  source_matches=$(grep -Fxc "$source_comment" "$path" || true)
+  first_line=$(sed -n '1p' "$path")
+
+  if [ "$source_matches" -ne 1 ]; then
+    fail "$path must contain exactly one source attribution comment: $source_comment"
+  elif [ "$first_line" != "$source_comment" ]; then
+    fail "$path source attribution must be the first line: $source_comment"
   else
     source_attribution_count=$((source_attribution_count + 1))
   fi

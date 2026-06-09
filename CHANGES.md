@@ -5,6 +5,8 @@
 - Required each mirrored page's canonical source URL to remain visible in
   `index.md` during offline docs validation.
 - Added per-page source attribution comments and validation for mirrored docs.
+- Required mirrored page source attribution comments to be first-line and
+  unique within each page.
 - Added `index.html` redirect validation so the GitHub Pages entry point must
   target a checked-in mirrored document.
 - Added `llms.txt` duplicate-title validation and disambiguated the canvas and
