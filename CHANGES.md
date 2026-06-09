@@ -4,6 +4,8 @@
 
 - Added `llms.txt` duplicate source URL validation so each mirrored source page
   appears once in the LLM-oriented index.
+- Added index source-pair validation so each local docs link stays paired with
+  its canonical Poe source URL.
 - Required each mirrored page's canonical source URL to remain visible in
   `index.md` during offline docs validation.
 - Added per-page source attribution comments and validation for mirrored docs.

@@ -41,6 +41,8 @@ For web services, APIs, sockets, or scraping workflows, prioritize reports invol
 Mirrored documentation can shape production bot behavior. Keep each mirrored
 page's source attribution comment intact as the first line so reviewers can
 trace guidance back to the canonical Poe creator docs before applying it.
+Keep each local index entry paired with its canonical Poe source URL so source
+context cannot be shuffled across mirrored pages.
 
 ## Dependency and Supply Chain Security
 

@@ -26,6 +26,7 @@ Priority:
 - Keep per-page source attribution comments in mirrored docs
 - Keep each mirrored page's source attribution as the first line
 - Keep source links visible for each document
+- Keep each index entry's local page link paired with its canonical source URL
 - Keep the HTML redirect entry point tied to a checked-in mirrored document
 
 Next priorities:
