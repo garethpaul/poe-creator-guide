@@ -206,6 +206,16 @@ else
     fail "index.html must link to at least one local docs page"
   fi
 
+  html_redirect_targets=$(
+    printf '%s\n' "$html_refs" |
+      sed 's/#.*$//; s/\.html$//' |
+      sort -u
+  )
+  html_redirect_target_count=$(printf '%s\n' "$html_redirect_targets" | sed '/^$/d' | wc -l | tr -d ' ')
+  if [ "$html_redirect_target_count" -ne 1 ]; then
+    fail "index.html redirect links must point to one mirrored document"
+  fi
+
   for ref in $html_refs; do
     slug=${ref#/docs/}
     slug=${slug%%#*}

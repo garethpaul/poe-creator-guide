@@ -47,6 +47,8 @@ Reject source URLs in the local index that no longer map to checked-in mirrored
 pages so readers are not sent to unreviewed or stale guidance.
 Reject duplicate local or source entries in the local index so mirrored pages
 cannot be listed twice with conflicting context.
+Keep `index.html` redirect references pointed at one mirrored document so
+refresh, canonical, and fallback links cannot send readers to different pages.
 
 ## Dependency and Supply Chain Security
 

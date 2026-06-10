@@ -31,6 +31,7 @@ Priority:
 - Keep each source URL in the index tied to a checked-in mirrored page
 - Keep duplicate local or source entries out of the local index
 - Keep the HTML redirect entry point tied to a checked-in mirrored document
+- Keep HTML redirect references aligned to one mirrored document
 
 Next priorities:
 

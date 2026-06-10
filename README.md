@@ -65,6 +65,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   page cannot be listed twice with conflicting summaries.
 - The same gate validates `index.html` redirect links so the GitHub Pages entry
   point cannot drift to a missing mirrored document.
+- The same gate requires all `index.html` redirect references to point to one
+  mirrored document so refresh, canonical, and fallback links cannot diverge.
 - The same gate keeps local index links paired with their canonical Poe source
   links so source attributions cannot be shuffled across pages.
 - The same gate rejects Poe source URLs in `index.md` that do not resolve to a
@@ -95,6 +97,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   docs-plan baseline and `plans/` for earlier historical plans.
 - See `docs/plans/2026-06-09-index-html-redirect-validation.md` for the
   `index.html` redirect validation guard.
+- See `docs/plans/2026-06-10-index-html-target-consistency.md` for the
+  `index.html` single-target redirect guard.
 - See `docs/plans/2026-06-09-llms-title-disambiguation.md` for the
   `llms.txt` duplicate-title guard.
 - See `docs/plans/2026-06-09-llms-url-deduplication.md` for the `llms.txt`

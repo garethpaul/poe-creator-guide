@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-10
+
+- Added `index.html` redirect target consistency validation so refresh,
+  canonical, and fallback links must point to the same mirrored document.
+
 ## 2026-06-09
 
 - Added reverse source-URL validation so every Poe source URL in `index.md`
