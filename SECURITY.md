@@ -49,6 +49,9 @@ Reject duplicate local or source entries in the local index so mirrored pages
 cannot be listed twice with conflicting context.
 Keep `index.html` redirect references pointed at one mirrored document so
 refresh, canonical, and fallback links cannot send readers to different pages.
+The hosted validation workflow uses read-only repository access, a pinned
+checkout action, and the dependency-free offline docs gate to reduce CI supply
+chain and credential exposure.
 
 ## Dependency and Supply Chain Security
 

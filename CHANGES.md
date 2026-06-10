@@ -2,6 +2,10 @@
 
 ## 2026-06-10
 
+- Added hosted offline documentation validation for pushes and pull requests,
+  with read-only permissions and a pinned checkout action.
+- Extended the docs checker to preserve the hosted workflow contract and its
+  completed maintenance plan.
 - Added `index.html` redirect target consistency validation so refresh,
   canonical, and fallback links must point to the same mirrored document.
 

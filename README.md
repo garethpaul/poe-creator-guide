@@ -14,6 +14,7 @@ This README is based on the checked-in source, manifests, scripts, and repositor
 - `README.md` - project overview and local usage notes
 - `CHANGES.md` - notable maintenance changes
 - `Makefile` - local verification entry points
+- `.github/workflows/check.yml` - hosted offline documentation validation
 - `docs` - source or example code
 - `index.md` and `index.html` - local documentation entry points
 - `llms.txt` - LLM-oriented source index
@@ -54,6 +55,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 ## Testing and Verification
 
 - Run `make check` or `make verify` before committing documentation index changes.
+- GitHub Actions runs the same dependency-free `make check` gate for pushes to
+  `main` and for pull requests.
 - Run `make build` for the static documentation build gate; it uses the same
   offline docs validator as `make lint`.
 - The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, each mirrored page has a source attribution comment, each page's source URL remains visible in `index.md`, each index entry keeps the local page link paired with its canonical source link, local `/docs/<slug>` links point to checked-in pages, and `docs/plans/` contains a completed maintenance plan.
@@ -73,6 +76,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   checked-in mirrored page.
 - The same gate rejects duplicate local or source entries in `index.md` so the
   table of contents cannot list a mirrored page twice with conflicting context.
+- The validator also protects the hosted workflow contract: read-only
+  permissions, a pinned checkout action, and the canonical `make check` command.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 

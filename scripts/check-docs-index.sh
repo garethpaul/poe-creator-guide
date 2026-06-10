@@ -12,6 +12,8 @@ llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
 index_source_url_plan="docs/plans/2026-06-09-index-source-url-validation.md"
 index_dedup_plan="docs/plans/2026-06-09-index-entry-deduplication.md"
+hosted_validation_plan="docs/plans/2026-06-10-hosted-docs-validation.md"
+workflow=".github/workflows/check.yml"
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -91,6 +93,26 @@ fi
 
 if [ ! -f "$index_dedup_plan" ]; then
   fail "$index_dedup_plan is missing"
+fi
+
+if [ ! -f "$hosted_validation_plan" ]; then
+  fail "$hosted_validation_plan is missing"
+fi
+
+if [ ! -f "$workflow" ]; then
+  fail "$workflow is missing"
+else
+  if ! grep -Fxq 'permissions:' "$workflow" || ! grep -Fxq '  contents: read' "$workflow"; then
+    fail "$workflow must declare read-only repository contents permission"
+  fi
+
+  if ! grep -Fq 'uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10' "$workflow"; then
+    fail "$workflow must pin actions/checkout to the reviewed v6 commit"
+  fi
+
+  if ! grep -Eq '^[[:space:]]+run: make check$' "$workflow"; then
+    fail "$workflow must run the canonical make check gate"
+  fi
 fi
 
 urls=$(grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' llms.txt | sort -u || true)
