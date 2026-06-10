@@ -76,6 +76,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   checked-in mirrored page.
 - The same gate rejects duplicate local or source entries in `index.md` so the
   table of contents cannot list a mirrored page twice with conflicting context.
+- Local documentation heading fragments are validated offline for both ATX and
+  Setext headings.
 - The validator also protects the hosted workflow contract: read-only
   permissions, a pinned checkout action, and the canonical `make check` command.
 

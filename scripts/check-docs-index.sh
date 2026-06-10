@@ -4,6 +4,7 @@ set -eu
 missing=0
 count=0
 link_count=0
+fragment_count=0
 redirect_count=0
 plan_count=0
 source_attribution_count=0
@@ -13,11 +14,27 @@ index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
 index_source_url_plan="docs/plans/2026-06-09-index-source-url-validation.md"
 index_dedup_plan="docs/plans/2026-06-09-index-entry-deduplication.md"
 hosted_validation_plan="docs/plans/2026-06-10-hosted-docs-validation.md"
+fragment_validation_plan="docs/plans/2026-06-10-local-fragment-validation.md"
 workflow=".github/workflows/check.yml"
 
 fail() {
   printf '%s\n' "$1" >&2
   missing=1
+}
+
+heading_anchors() {
+  awk '
+    /^#{1,6}[[:space:]]+/ {
+      heading = $0
+      sub(/^#{1,6}[[:space:]]+/, "", heading)
+      print heading
+    }
+    /^[=-]+[[:space:]]*$/ && previous != "" { print previous }
+    { previous = $0 }
+  ' "$1" |
+    sed -E 's/<[^>]*>//g; s/[`*]//g; s/\\//g' |
+    tr '[:upper:]' '[:lower:]' |
+    sed -E 's/[^a-z0-9 _-]//g; s/[[:space:]]+/-/g; s/-+/-/g; s/^-//; s/-$//'
 }
 
 for path in docs/*.md; do
@@ -97,6 +114,10 @@ fi
 
 if [ ! -f "$hosted_validation_plan" ]; then
   fail "$hosted_validation_plan is missing"
+fi
+
+if [ ! -f "$fragment_validation_plan" ]; then
+  fail "$fragment_validation_plan is missing"
 fi
 
 if [ ! -f "$workflow" ]; then
@@ -216,6 +237,12 @@ for file in index.md docs/*.md; do
 
     if [ ! -f "$path" ]; then
       fail "$file references missing local doc: $ref ($path)"
+    elif [ "$ref" != "${ref#*#}" ]; then
+      fragment=${ref#*#}
+      fragment_count=$((fragment_count + 1))
+      if ! heading_anchors "$path" | grep -Fxq "$fragment"; then
+        fail "$file references missing local heading: $ref ($path#$fragment)"
+      fi
     fi
   done
 done
@@ -255,4 +282,4 @@ if [ "$missing" -ne 0 ]; then
   exit 1
 fi
 
-printf 'Docs index check passed for %s mirrored pages, %s source attributions, %s paired index source links, %s unique llms source URLs, %s index source URLs, %s local doc links, %s HTML redirect links, and %s docs plans.\n' "$count" "$source_attribution_count" "$index_source_pair_count" "$(printf '%s\n' "$urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$(printf '%s\n' "$index_source_urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$link_count" "$redirect_count" "$plan_count"
+printf 'Docs index check passed for %s mirrored pages, %s source attributions, %s paired index source links, %s unique llms source URLs, %s index source URLs, %s local doc links, %s heading fragments, %s HTML redirect links, and %s docs plans.\n' "$count" "$source_attribution_count" "$index_source_pair_count" "$(printf '%s\n' "$urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$(printf '%s\n' "$index_source_urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$link_count" "$fragment_count" "$redirect_count" "$plan_count"

@@ -49,6 +49,8 @@ Reject duplicate local or source entries in the local index so mirrored pages
 cannot be listed twice with conflicting context.
 Keep `index.html` redirect references pointed at one mirrored document so
 refresh, canonical, and fallback links cannot send readers to different pages.
+Keep local heading fragments aligned with checked-in Markdown headings so
+content reorganizations cannot silently leave stale section links.
 The hosted validation workflow uses read-only repository access, a pinned
 checkout action, and the dependency-free offline docs gate to reduce CI supply
 chain and credential exposure.

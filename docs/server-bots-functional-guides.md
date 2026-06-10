@@ -144,7 +144,7 @@ Thats it! Try chatting with your bot now, and you should see responses from GPT-
 > 🚧 Warning
 > ---------
 >
-> If you see some error related to bot call counts, it's possible your dependencies are not updated properly. See [Updating Bot Settings](/docs/server-bots-functional-guides#updating-bot-settings) for possible resolutions.
+> If you see some error related to bot call counts, it's possible your dependencies are not updated properly. See [Updating Bot Settings](/docs/updating-bot-settings) for possible resolutions.
 
 Rendering an image in your response
 ===================================
@@ -645,7 +645,7 @@ If this setting is not enabled, you will continue to see bot/user messages as se
 Updating bot settings
 =====================
 
-Bots on poe each have [settings](/docs/poe-protocol-specification#settings) that control how the bot behaves. For example, one such setting is `server_bot_dependencies`, which allows you to [call other bots on poe](/docs/server-bots-functional-guides#accessing-other-bots-on-poe). It is important to note that after modifying these settings, (i.e. after modifying `get_settings()` in your `PoeBot` class), these updates still need to be sent to the Poe servers. This is typically done automatically on server bot startup, within fastapi\_poe's make\_app function,
+Bots on poe each have [settings](/docs/poe-protocol-specification#settings) that control how the bot behaves. For example, one such setting is `server_bot_dependencies`, which allows you to [call other bots on poe](/docs/accessing-other-bots-on-poe). It is important to note that after modifying these settings, (i.e. after modifying `get_settings()` in your `PoeBot` class), these updates still need to be sent to the Poe servers. This is typically done automatically on server bot startup, within fastapi\_poe's make\_app function,
 
 > ❗️ Warning!!!
 > -------------

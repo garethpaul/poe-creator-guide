@@ -8,6 +8,8 @@
   completed maintenance plan.
 - Added `index.html` redirect target consistency validation so refresh,
   canonical, and fallback links must point to the same mirrored document.
+- Added offline local heading-fragment validation and repaired stale section
+  links after guide content moved to dedicated pages.
 
 ## 2026-06-09
 
