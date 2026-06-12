@@ -19,10 +19,12 @@ before review.
 
 - Added `.github/workflows/check.yml` to run `make check` on pushes, pull
   requests, and manual dispatches.
+- Added commit-pinned checkout with credential persistence disabled, read-only
+  permissions, concurrency cancellation, and a bounded Ubuntu runner.
 - Reused the existing shell validator without adding a package manager or
   network dependency.
 - Extended `scripts/check-docs-index.sh` to require the CI workflow and this
-  completed plan.
+  completed plan, including its exact least-privilege structure.
 - Updated README, VISION, SECURITY, and CHANGES with the CI baseline.
 
 ## Verification

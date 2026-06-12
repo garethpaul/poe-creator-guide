@@ -48,6 +48,15 @@ Reject source URLs in the local index that no longer map to checked-in mirrored
 pages so readers are not sent to unreviewed or stale guidance.
 Reject duplicate local or source entries in the local index so mirrored pages
 cannot be listed twice with conflicting context.
+Keep `index.html` redirect references pointed at one mirrored document so
+refresh, canonical, and fallback links cannot send readers to different pages.
+Keep local heading fragments aligned with checked-in Markdown headings so
+content reorganizations cannot silently leave stale section links.
+Reject legacy `doc:` and parent-relative Markdown targets so mirrored guide
+navigation cannot bypass validated `/docs/...` paths.
+The hosted validation workflow uses read-only repository access, a pinned
+checkout action with credential persistence disabled, and the dependency-free
+offline docs gate to reduce CI supply-chain and credential exposure.
 
 ## Dependency and Supply Chain Security
 

@@ -22,7 +22,11 @@ Priority:
   with conflicting summaries
 - Maintain `make check`, `make verify`, and `make build` as the docs-index,
   source-link, and local-link validation gates
-- Keep GitHub Actions running the offline `make check` baseline before review
+- Keep local heading fragments aligned with mirrored Markdown headings
+- Keep mirrored guide links on validated `/docs/...` paths instead of legacy
+  `doc:` or parent-relative Markdown targets
+- Run the canonical dependency-free docs gate in GitHub Actions with read-only
+  permissions and pinned, credential-free third-party actions
 - Record new maintenance plans under `docs/plans/`
 - Avoid hand-editing generated pages without noting the source
 - Keep per-page source attribution comments in mirrored docs
@@ -32,6 +36,7 @@ Priority:
 - Keep each source URL in the index tied to a checked-in mirrored page
 - Keep duplicate local or source entries out of the local index
 - Keep the HTML redirect entry point tied to a checked-in mirrored document
+- Keep HTML redirect references aligned to one mirrored document
 
 Next priorities:
 

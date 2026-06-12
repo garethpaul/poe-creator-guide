@@ -14,6 +14,7 @@ This README is based on the checked-in source, manifests, scripts, and repositor
 - `README.md` - project overview and local usage notes
 - `CHANGES.md` - notable maintenance changes
 - `Makefile` - local verification entry points
+- `.github/workflows/check.yml` - hosted offline documentation validation
 - `docs` - source or example code
 - `index.md` and `index.html` - local documentation entry points
 - `llms.txt` - LLM-oriented source index
@@ -54,10 +55,11 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 ## Testing and Verification
 
 - Run `make check` or `make verify` before committing documentation index changes.
+- Pinned, credential-free, read-only GitHub Actions runs the same
+  dependency-free `make check` gate for pushes to `main`, pull requests, and
+  manual dispatches.
 - Run `make build` for the static documentation build gate; it uses the same
   offline docs validator as `make lint`.
-- GitHub Actions runs `make check` through `.github/workflows/check.yml` on
-  pushes, pull requests, and manual dispatches.
 - The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, each mirrored page has a source attribution comment, each page's source URL remains visible in `index.md`, each index entry keeps the local page link paired with its canonical source link, local `/docs/<slug>` links point to checked-in pages, and `docs/plans/` contains a completed maintenance plan.
 - The source attribution guard requires exactly one source comment as the first
   line of each mirrored page.
@@ -67,12 +69,20 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   page cannot be listed twice with conflicting summaries.
 - The same gate validates `index.html` redirect links so the GitHub Pages entry
   point cannot drift to a missing mirrored document.
+- The same gate requires all `index.html` redirect references to point to one
+  mirrored document so refresh, canonical, and fallback links cannot diverge.
 - The same gate keeps local index links paired with their canonical Poe source
   links so source attributions cannot be shuffled across pages.
 - The same gate rejects Poe source URLs in `index.md` that do not resolve to a
   checked-in mirrored page.
 - The same gate rejects duplicate local or source entries in `index.md` so the
   table of contents cannot list a mirrored page twice with conflicting context.
+- Local documentation heading fragments are validated offline for both ATX and
+  Setext headings.
+- Legacy `doc:` and parent-relative Markdown guide links are rejected so local
+  navigation consistently uses validated `/docs/...` targets.
+- The validator also protects the hosted workflow contract: read-only
+  permissions, a pinned checkout action, and the canonical `make check` command.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
@@ -97,6 +107,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   docs-plan baseline and `plans/` for earlier historical plans.
 - See `docs/plans/2026-06-09-index-html-redirect-validation.md` for the
   `index.html` redirect validation guard.
+- See `docs/plans/2026-06-10-index-html-target-consistency.md` for the
+  `index.html` single-target redirect guard.
 - See `docs/plans/2026-06-09-llms-title-disambiguation.md` for the
   `llms.txt` duplicate-title guard.
 - See `docs/plans/2026-06-09-llms-url-deduplication.md` for the `llms.txt`
@@ -112,6 +124,10 @@ When the required SDK or runtime is unavailable, use static checks and source re
 - See `docs/plans/2026-06-09-first-line-source-attribution.md` for the
   first-line attribution placement guard.
 - See `docs/plans/2026-06-10-ci-baseline.md` for the GitHub Actions baseline.
+- See `docs/plans/2026-06-10-hosted-docs-validation.md` for the pinned,
+  read-only hosted validation boundary.
+- See `docs/plans/2026-06-12-legacy-local-link-validation.md` for normalized
+  mirrored guide links and the legacy-link guard.
 
 ## Contributing
 

@@ -46,6 +46,9 @@
 - See `CHANGES.md` for maintenance history.
 - See `docs/plans/2026-06-08-docs-plan-location-baseline.md` for the canonical docs-plan baseline and `plans/` for earlier historical plans.
 - See `docs/plans/2026-06-09-index-html-redirect-validation.md` for the `index.html` redirect validation guard.
+- Keep mirrored local links on validated `/docs/...` paths and preserve valid
+  heading fragments when guide sections move.
+- Keep hosted checkout singular, pinned, read-only, and credential-free.
 
 ## Agent workflow
 

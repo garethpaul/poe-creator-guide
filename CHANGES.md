@@ -1,12 +1,23 @@
 # Changes
 
+## 2026-06-12
+
+- Repaired two broken mirrored guide links that used legacy `doc:` and
+  parent-relative Markdown targets.
+- Added an offline guard requiring mirrored local guide links to use validated
+  `/docs/...` paths.
+
 ## 2026-06-10
 
-- Added a GitHub Actions check workflow that runs the existing offline
-  `make check` docs baseline on pushes, pull requests, and manual dispatches.
-- Added a docs-index guard requiring the CI workflow and completed CI baseline
-  plan to remain checked in.
-
+- Added GitHub Actions offline documentation validation for pushes, pull
+  requests, and manual dispatches, with read-only permissions and pinned,
+  credential-free checkout.
+- Extended the docs checker to preserve the exact hosted workflow contract and
+  both completed CI maintenance plans.
+- Added `index.html` redirect target consistency validation so refresh,
+  canonical, and fallback links must point to the same mirrored document.
+- Added offline local heading-fragment validation and repaired stale section
+  links after guide content moved to dedicated pages.
 ## 2026-06-09
 
 - Added reverse source-URL validation so every Poe source URL in `index.md`
