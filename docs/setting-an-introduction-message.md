@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/setting-an-introduction-message -->
+<!-- Source: https://creator.poe.com/docs/server-bots/setting-an-introduction-message -->
 
 getting started
 ---------------

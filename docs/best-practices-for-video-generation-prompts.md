@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/best-practices-for-video-generation-prompts -->
+<!-- Source: https://creator.poe.com/docs/prompt-bots/best-practices-for-video-generation-prompts -->
 
 getting started
 ---------------

@@ -51,10 +51,15 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 - Open `index.md` for the local Markdown index, or `index.html` for the GitHub Pages redirect.
 - Read `llms.txt` for source URLs and short page summaries.
+- Read `docs/sources.tsv` for the reviewed mapping from stable local slugs to
+  canonical upstream Poe URLs and the last live-verification date.
 
 ## Testing and Verification
 
 - Run `make check` or `make verify` before committing documentation index changes.
+- Run `make check-sources` when intentionally auditing current upstream source
+  availability; it follows redirects and requires each canonical manifest URL
+  to return HTTP 200 without redirecting.
 - Pinned, credential-free, read-only GitHub Actions runs the same
   dependency-free `make check` gate for pushes to `main`, pull requests, and
   manual dispatches.
@@ -128,6 +133,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   read-only hosted validation boundary.
 - See `docs/plans/2026-06-12-legacy-local-link-validation.md` for normalized
   mirrored guide links and the legacy-link guard.
+- See `docs/plans/2026-06-12-canonical-source-manifest.md` for canonical source
+  mapping and the opt-in live availability audit.
 
 ## Contributing
 

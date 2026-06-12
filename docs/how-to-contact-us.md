@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/how-to-contact-us -->
+<!-- Source: https://creator.poe.com/docs/resources/how-to-contact-us -->
 
 getting started
 ---------------

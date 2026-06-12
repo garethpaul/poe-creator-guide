@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/updating-bot-settings -->
+<!-- Source: https://creator.poe.com/docs/server-bots/updating-bot-settings -->
 
 getting started
 ---------------

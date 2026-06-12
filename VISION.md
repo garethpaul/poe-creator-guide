@@ -34,6 +34,10 @@ Priority:
 - Keep source links visible for each document
 - Keep each index entry's local page link paired with its canonical source URL
 - Keep each source URL in the index tied to a checked-in mirrored page
+- Keep `docs/sources.tsv` as the reviewed one-to-one mapping between stable
+  local mirror slugs and canonical upstream source URLs
+- Use the opt-in live source audit to refresh verification dates without making
+  canonical offline validation depend on upstream availability
 - Keep duplicate local or source entries out of the local index
 - Keep the HTML redirect entry point tied to a checked-in mirrored document
 - Keep HTML redirect references aligned to one mirrored document

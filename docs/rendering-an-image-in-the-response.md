@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/rendering-an-image-in-the-response -->
+<!-- Source: https://creator.poe.com/docs/server-bots/rendering-an-image-in-the-response -->
 
 getting started
 ---------------

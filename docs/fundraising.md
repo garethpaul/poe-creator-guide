@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/fundraising -->
+<!-- Source: https://creator.poe.com/docs/resources/fundraising -->
 
 getting started
 ---------------

@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/how-to-get-distribution -->
+<!-- Source: https://creator.poe.com/docs/resources/how-to-get-distribution -->
 
 getting started
 ---------------

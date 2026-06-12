@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/frequently-asked-questions -->
+<!-- Source: https://creator.poe.com/docs/resources/frequently-asked-questions -->
 
 getting started
 ---------------

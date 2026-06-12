@@ -2,6 +2,11 @@
 
 ## 2026-06-12
 
+- Replaced 25 legacy derived source URLs with reviewed canonical sectioned Poe
+  URLs and recorded their live-verification date in `docs/sources.tsv`.
+- Added offline manifest coverage and consistency validation plus an opt-in
+  `make check-sources` live HTTP 200 audit; canonical GitHub Actions remains
+  dependency-free and network-free.
 - Repaired two broken mirrored guide links that used legacy `doc:` and
   parent-relative Markdown targets.
 - Added an offline guard requiring mirrored local guide links to use validated

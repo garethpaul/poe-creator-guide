@@ -1,5 +1,7 @@
 # Poe Creator Guide CI Baseline
 
+status: completed
+
 ## Status: Completed
 
 ## Context

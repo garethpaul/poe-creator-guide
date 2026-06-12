@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/accessing-other-bots-on-poe -->
+<!-- Source: https://creator.poe.com/docs/server-bots/accessing-other-bots-on-poe -->
 
 ## getting started
 

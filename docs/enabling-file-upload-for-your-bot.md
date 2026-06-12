@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/enabling-file-upload-for-your-bot -->
+<!-- Source: https://creator.poe.com/docs/server-bots/enabling-file-upload-for-your-bot -->
 
 getting started
 ---------------

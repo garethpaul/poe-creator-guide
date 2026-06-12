@@ -44,6 +44,8 @@ page's source attribution comment intact as the first line so reviewers can
 trace guidance back to the canonical Poe creator docs before applying it.
 Keep each local index entry paired with its canonical Poe source URL so source
 context cannot be shuffled across mirrored pages.
+Keep canonical URLs and live-verification dates in `docs/sources.tsv`; use the
+opt-in live audit separately from credential-free offline GitHub Actions.
 Reject source URLs in the local index that no longer map to checked-in mirrored
 pages so readers are not sent to unreviewed or stale guidance.
 Reject duplicate local or source entries in the local index so mirrored pages

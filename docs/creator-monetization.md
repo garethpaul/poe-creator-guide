@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/creator-monetization -->
+<!-- Source: https://creator.poe.com/docs/resources/creator-monetization -->
 
 getting started
 ---------------
