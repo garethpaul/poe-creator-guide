@@ -12,6 +12,8 @@ llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
 index_source_url_plan="docs/plans/2026-06-09-index-source-url-validation.md"
 index_dedup_plan="docs/plans/2026-06-09-index-entry-deduplication.md"
+ci_plan="docs/plans/2026-06-10-ci-baseline.md"
+ci_workflow=".github/workflows/check.yml"
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -92,6 +94,30 @@ fi
 if [ ! -f "$index_dedup_plan" ]; then
   fail "$index_dedup_plan is missing"
 fi
+
+if [ ! -f "$ci_plan" ]; then
+  fail "$ci_plan is missing"
+fi
+
+if [ ! -f "$ci_workflow" ]; then
+  fail "$ci_workflow is missing"
+fi
+
+if ! grep -Fq "uses: actions/checkout@v4" "$ci_workflow" ||
+   ! grep -Fq "run: make check" "$ci_workflow"; then
+  fail "$ci_workflow must run the make check docs baseline"
+fi
+
+if ! grep -Fq "Status: Completed" "$ci_plan" ||
+   ! grep -Fq "make check" "$ci_plan"; then
+  fail "$ci_plan must record completed status and make check verification"
+fi
+
+for docs_baseline_file in README.md VISION.md SECURITY.md CHANGES.md; do
+  if ! grep -Fq "GitHub Actions" "$docs_baseline_file"; then
+    fail "$docs_baseline_file must document the GitHub Actions baseline"
+  fi
+done
 
 urls=$(grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' llms.txt | sort -u || true)
 for url in $urls; do

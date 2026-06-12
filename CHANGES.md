@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-06-10
+
+- Added a GitHub Actions check workflow that runs the existing offline
+  `make check` docs baseline on pushes, pull requests, and manual dispatches.
+- Added a docs-index guard requiring the CI workflow and completed CI baseline
+  plan to remain checked in.
+
 ## 2026-06-09
 
 - Added reverse source-URL validation so every Poe source URL in `index.md`

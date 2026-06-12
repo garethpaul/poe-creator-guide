@@ -22,6 +22,7 @@ Priority:
   with conflicting summaries
 - Maintain `make check`, `make verify`, and `make build` as the docs-index,
   source-link, and local-link validation gates
+- Keep GitHub Actions running the offline `make check` baseline before review
 - Record new maintenance plans under `docs/plans/`
 - Avoid hand-editing generated pages without noting the source
 - Keep per-page source attribution comments in mirrored docs
@@ -45,6 +46,8 @@ Contribution rules:
 - Keep copied documentation attributable to its source.
 - Do not mix generated refreshes with unrelated edits.
 - Preserve filenames and links unless the source structure changes.
+- Keep `.github/workflows/check.yml` aligned with the offline docs validation
+  baseline.
 
 ## Security And Responsible Use
 

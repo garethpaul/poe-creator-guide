@@ -56,6 +56,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Run `make check` or `make verify` before committing documentation index changes.
 - Run `make build` for the static documentation build gate; it uses the same
   offline docs validator as `make lint`.
+- GitHub Actions runs `make check` through `.github/workflows/check.yml` on
+  pushes, pull requests, and manual dispatches.
 - The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, each mirrored page has a source attribution comment, each page's source URL remains visible in `index.md`, each index entry keeps the local page link paired with its canonical source link, local `/docs/<slug>` links point to checked-in pages, and `docs/plans/` contains a completed maintenance plan.
 - The source attribution guard requires exactly one source comment as the first
   line of each mirrored page.
@@ -109,6 +111,7 @@ When the required SDK or runtime is unavailable, use static checks and source re
   per-page source attribution guard.
 - See `docs/plans/2026-06-09-first-line-source-attribution.md` for the
   first-line attribution placement guard.
+- See `docs/plans/2026-06-10-ci-baseline.md` for the GitHub Actions baseline.
 
 ## Contributing
 
