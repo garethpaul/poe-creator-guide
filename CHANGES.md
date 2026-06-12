@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-06-12
+
+- Repaired two broken mirrored guide links that used legacy `doc:` and
+  parent-relative Markdown targets.
+- Added an offline guard requiring mirrored local guide links to use validated
+  `/docs/...` paths.
+
 ## 2026-06-10
 
 - Added hosted offline documentation validation for pushes and pull requests,

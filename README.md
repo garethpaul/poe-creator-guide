@@ -78,6 +78,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   table of contents cannot list a mirrored page twice with conflicting context.
 - Local documentation heading fragments are validated offline for both ATX and
   Setext headings.
+- Legacy `doc:` and parent-relative Markdown guide links are rejected so local
+  navigation consistently uses validated `/docs/...` targets.
 - The validator also protects the hosted workflow contract: read-only
   permissions, a pinned checkout action, and the canonical `make check` command.
 
@@ -120,6 +122,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   per-page source attribution guard.
 - See `docs/plans/2026-06-09-first-line-source-attribution.md` for the
   first-line attribution placement guard.
+- See `docs/plans/2026-06-12-legacy-local-link-validation.md` for normalized
+  mirrored guide links and the legacy-link guard.
 
 ## Contributing
 

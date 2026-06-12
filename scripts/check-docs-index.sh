@@ -15,6 +15,7 @@ index_source_url_plan="docs/plans/2026-06-09-index-source-url-validation.md"
 index_dedup_plan="docs/plans/2026-06-09-index-entry-deduplication.md"
 hosted_validation_plan="docs/plans/2026-06-10-hosted-docs-validation.md"
 fragment_validation_plan="docs/plans/2026-06-10-local-fragment-validation.md"
+legacy_local_link_plan="docs/plans/2026-06-12-legacy-local-link-validation.md"
 workflow=".github/workflows/check.yml"
 
 fail() {
@@ -120,6 +121,10 @@ if [ ! -f "$fragment_validation_plan" ]; then
   fail "$fragment_validation_plan is missing"
 fi
 
+if [ ! -f "$legacy_local_link_plan" ]; then
+  fail "$legacy_local_link_plan is missing"
+fi
+
 if [ ! -f "$workflow" ]; then
   fail "$workflow is missing"
 else
@@ -218,6 +223,17 @@ if [ -n "$duplicate_titles" ]; then
 '
   for title in $duplicate_titles; do
     fail "llms.txt duplicate doc title: $title"
+  done
+  IFS=$old_ifs
+fi
+
+legacy_local_links=$(grep -En '\]\((doc:[^ )]+|\.\./[^ )]+\.md(#[^ )]+)?)\)' index.md docs/*.md || true)
+if [ -n "$legacy_local_links" ]; then
+  old_ifs=$IFS
+  IFS='
+'
+  for match in $legacy_local_links; do
+    fail "legacy local documentation link must use /docs/<slug>: $match"
   done
   IFS=$old_ifs
 fi

@@ -51,6 +51,8 @@ Keep `index.html` redirect references pointed at one mirrored document so
 refresh, canonical, and fallback links cannot send readers to different pages.
 Keep local heading fragments aligned with checked-in Markdown headings so
 content reorganizations cannot silently leave stale section links.
+Reject legacy `doc:` and parent-relative Markdown targets so mirrored guide
+navigation cannot bypass validated `/docs/...` paths.
 The hosted validation workflow uses read-only repository access, a pinned
 checkout action, and the dependency-free offline docs gate to reduce CI supply
 chain and credential exposure.

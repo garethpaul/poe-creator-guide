@@ -23,6 +23,8 @@ Priority:
 - Maintain `make check`, `make verify`, and `make build` as the docs-index,
   source-link, and local-link validation gates
 - Keep local heading fragments aligned with mirrored Markdown headings
+- Keep mirrored guide links on validated `/docs/...` paths instead of legacy
+  `doc:` or parent-relative Markdown targets
 - Run the canonical dependency-free docs gate in hosted CI with read-only
   permissions and pinned third-party actions
 - Record new maintenance plans under `docs/plans/`
