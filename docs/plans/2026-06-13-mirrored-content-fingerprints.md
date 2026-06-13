@@ -1,6 +1,6 @@
 # Mirrored Content Fingerprints
 
-status: planned
+status: completed
 
 ## Summary
 
@@ -89,3 +89,23 @@ Test scenarios:
   guidance, status, and evidence
 - exact-path and mirrored-page no-diff audit, `git diff --check`, and secret,
   captured-prompt, generated-artifact, URL/date, and dependency-drift scans
+
+## Work Completed
+
+- Added a lowercase SHA-256 fingerprint to every canonical source row without
+  changing any mirrored page bytes, URL, or verification date.
+- Added portable GNU and BSD/macOS digest verification to the offline and live
+  source validators.
+- Updated maintenance guidance and completed-evidence contracts.
+
+## Verification Completed
+
+- `sh -n` and `dash -n` passed for both validators.
+- Every Make target including `make check` passed, and the checker passed from
+  an external working directory.
+- All 25 manifest fingerprints recomputed exactly from their mirrored pages.
+- 10 hostile mutations rejected content, digest shape/value, row shape,
+  missing tooling, guidance, status, and evidence drift.
+- The mirrored page paths had no diff.
+- `git diff --check` passed.
+- The secret, captured-prompt, generated-artifact, URL/date, and dependency-drift scan found no prohibited content or unintended changes.

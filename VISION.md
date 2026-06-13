@@ -36,6 +36,7 @@ Priority:
 - Keep each source URL in the index tied to a checked-in mirrored page
 - Keep `docs/sources.tsv` as the reviewed one-to-one mapping between stable
   local mirror slugs and canonical upstream source URLs
+- Keep mirrored content fingerprints aligned with every reviewed local page
 - Use the opt-in live source audit to refresh verification dates without making
   canonical offline validation depend on upstream availability
 - Keep duplicate local or source entries out of the local index
