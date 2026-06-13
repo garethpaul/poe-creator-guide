@@ -2,6 +2,8 @@
 
 ## 2026-06-13
 
+- Added network-free live source audit tests for curl arguments, HTTP failures,
+  redirects, transport errors, and fingerprint preflight ordering.
 - Added mirrored content fingerprints to every canonical source row and made
   offline and opt-in live validation reject local snapshot drift.
 

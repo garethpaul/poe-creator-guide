@@ -1,6 +1,6 @@
 # Test The Live Source Audit Offline
 
-status: planned
+status: completed
 
 ## Summary
 
@@ -74,8 +74,24 @@ intentional source refresh fail without the canonical offline gate noticing.
 
 ## Work Completed
 
-Pending implementation.
+- Added a temporary one-page fixture repository and fake curl executable that
+  run the real live source checker without network access.
+- Covered successful HTTP 200 handling, required curl arguments, non-200
+  responses, redirects, transport failures, and mirror fingerprint preflight.
+- Added the harness to `make test` and protected its executable, Make, failure,
+  guidance, and completed-plan contracts in the offline docs checker.
+- Documented the difference between deterministic offline contract tests and
+  the explicitly networked `make check-sources` command.
 
 ## Verification Completed
 
-Pending implementation and verification.
+- `sh -n` and `dash -n` passed for both the live audit and its test harness.
+- The focused harness, `make lint`, `make test`, `make build`, `make verify`,
+  and `make check` passed; the completed-copy checker also passed from an
+  external working directory.
+- Ten hostile mutations rejected changes to the transfer timeout, retry count,
+  HTTP failure, redirect failure, fingerprint preflight, Make wiring, transport
+  case, guidance, plan status, and verification evidence.
+- `git diff --check` passed. Exact-base comparison confirmed the source
+  manifest, all 25 mirrored pages, indexes, redirects, workflow, configuration,
+  and dependencies were unchanged; the secret, captured-prompt, generated-artifact, source-manifest, and dependency scan passed.

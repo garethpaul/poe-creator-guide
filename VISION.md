@@ -39,6 +39,8 @@ Priority:
 - Keep mirrored content fingerprints aligned with every reviewed local page
 - Use the opt-in live source audit to refresh verification dates without making
   canonical offline validation depend on upstream availability
+- Keep network-free live source audit tests in the offline gate so network
+  result handling remains deterministic
 - Keep duplicate local or source entries out of the local index
 - Keep the HTML redirect entry point tied to a checked-in mirrored document
 - Keep HTML redirect references aligned to one mirrored document

@@ -16,8 +16,10 @@ manifest_count=0
 fingerprint_count=0
 manifest="docs/sources.tsv"
 source_availability_script="scripts/check-source-availability.sh"
+source_availability_tests="scripts/test-source-availability.sh"
 source_manifest_plan="docs/plans/2026-06-12-canonical-source-manifest.md"
 content_fingerprint_plan="docs/plans/2026-06-13-mirrored-content-fingerprints.md"
+source_availability_test_plan="docs/plans/2026-06-13-live-source-audit-tests.md"
 makefile="Makefile"
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
@@ -137,6 +139,45 @@ if ! grep -Fq 'check-sources:' "$makefile" ||
   fail "$makefile must expose the opt-in check-sources command"
 fi
 
+if [ ! -x "$source_availability_tests" ]; then
+  fail "$source_availability_tests must exist and be executable"
+else
+  for test_contract in \
+    'FAKE_CURL_MODE' \
+    'assert_argument_pair --max-time 20' \
+    'assert_argument_pair --retry 2' \
+    'run_audit http_error' \
+    'run_audit redirect' \
+    'run_audit transport_error' \
+    'mirror fingerprint mismatch' \
+    'verify the mirror fingerprint before invoking curl'; do
+    if ! grep -Fq -- "$test_contract" "$source_availability_tests"; then
+      fail "$source_availability_tests must preserve the offline live-audit contract: $test_contract"
+    fi
+  done
+fi
+
+if ! grep -Fq 'scripts/test-source-availability.sh' "$makefile"; then
+  fail "$makefile test gate must execute the offline live source audit tests"
+fi
+
+if [ ! -f "$source_availability_test_plan" ]; then
+  fail "$source_availability_test_plan is missing"
+else
+  for evidence in \
+    'status: completed' \
+    'sh -n' \
+    'dash -n' \
+    'make check' \
+    'hostile mutations rejected' \
+    'git diff --check' \
+    'secret, captured-prompt, generated-artifact, source-manifest, and dependency scan'; do
+    if ! grep -Fq "$evidence" "$source_availability_test_plan"; then
+      fail "$source_availability_test_plan must preserve completed evidence: $evidence"
+    fi
+  done
+fi
+
 for source_documentation in README.md VISION.md SECURITY.md CHANGES.md; do
   if ! grep -Fq 'docs/sources.tsv' "$source_documentation"; then
     fail "$source_documentation must document docs/sources.tsv"
@@ -146,6 +187,12 @@ done
 for fingerprint_documentation in README.md VISION.md SECURITY.md CHANGES.md; do
   if ! grep -Fq 'mirrored content fingerprints' "$fingerprint_documentation"; then
     fail "$fingerprint_documentation must document mirrored content fingerprints"
+  fi
+done
+
+for source_test_documentation in README.md VISION.md SECURITY.md CHANGES.md; do
+  if ! grep -Fq 'network-free live source audit tests' "$source_test_documentation"; then
+    fail "$source_test_documentation must document the network-free live source audit tests"
   fi
 done
 
