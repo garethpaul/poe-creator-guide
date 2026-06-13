@@ -44,10 +44,11 @@ Priority:
 - Keep duplicate local or source entries out of the local index
 - Keep the HTML redirect entry point tied to a checked-in mirrored document
 - Keep HTML redirect references aligned to one mirrored document
+- Keep mirror refreshes human-reviewed, reproducible, and atomically recorded
+  without automatic prose replacement
 
 Next priorities:
 
-- Add a refresh script or documented generation process
 - Record generation timestamps
 - Expand validation beyond attribution placement into front matter and source freshness
 - Clarify which files are generated versus maintained by hand

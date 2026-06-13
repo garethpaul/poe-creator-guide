@@ -17,9 +17,12 @@ fingerprint_count=0
 manifest="docs/sources.tsv"
 source_availability_script="scripts/check-source-availability.sh"
 source_availability_tests="scripts/test-source-availability.sh"
+mirror_refresh_script="scripts/record-mirror-refresh.sh"
+mirror_refresh_tests="scripts/test-mirror-refresh.sh"
 source_manifest_plan="docs/plans/2026-06-12-canonical-source-manifest.md"
 content_fingerprint_plan="docs/plans/2026-06-13-mirrored-content-fingerprints.md"
 source_availability_test_plan="docs/plans/2026-06-13-live-source-audit-tests.md"
+mirror_refresh_plan="docs/plans/2026-06-13-mirror-refresh-process.md"
 makefile="Makefile"
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
@@ -214,6 +217,73 @@ else
     'secret, captured-prompt, generated-artifact, URL/date, and dependency-drift scan'; do
     if ! grep -Fq "$evidence" "$content_fingerprint_plan"; then
       fail "$content_fingerprint_plan must preserve completed evidence: $evidence"
+    fi
+  done
+fi
+
+for required_path in "$mirror_refresh_script" "$mirror_refresh_tests" "$mirror_refresh_plan"; do
+  if [ ! -f "$required_path" ]; then
+    fail "$required_path is missing"
+  fi
+done
+
+if [ -f "$mirror_refresh_script" ]; then
+  for contract in \
+    'POE_CREATOR_GUIDE_ROOT' \
+    'invalid mirror slug' \
+    'invalid verification date' \
+    'exactly one row' \
+    'canonical source comment on its first line' \
+    'sha256_file "$mirror"' \
+    'mktemp "$ROOT_DIR/docs/.sources.tsv.XXXXXX"' \
+    'chmod 0644 "$temporary"' \
+    'mv "$temporary" "$MANIFEST"'; do
+    if ! grep -Fq "$contract" "$mirror_refresh_script"; then
+      fail "$mirror_refresh_script must preserve the refresh contract: $contract"
+    fi
+  done
+fi
+
+if [ -f "$mirror_refresh_tests" ]; then
+  for contract in \
+    'the selected manifest row was not refreshed exactly' \
+    'an unrelated manifest row changed' \
+    'invalid slugs must be rejected' \
+    'invalid dates must be rejected' \
+    'missing manifest rows must be rejected' \
+    'incorrect source attribution must be rejected' \
+    'duplicate manifest rows must be rejected'; do
+    if ! grep -Fq "$contract" "$mirror_refresh_tests"; then
+      fail "$mirror_refresh_tests must preserve the fixture: $contract"
+    fi
+  done
+fi
+
+for contract in \
+  '.PHONY: check check-sources record-refresh lint test build verify' \
+  'record-refresh:' \
+  'scripts/record-mirror-refresh.sh "$(SLUG)" "$(VERIFIED_AT)"' \
+  'scripts/test-mirror-refresh.sh'; do
+  if ! grep -Fq "$contract" "$makefile"; then
+    fail "$makefile must preserve the refresh target contract: $contract"
+  fi
+done
+
+for document in README.md SECURITY.md VISION.md CHANGES.md; do
+  if ! grep -Fiq 'mirror refresh' "$document"; then
+    fail "$document must document the mirror refresh process"
+  fi
+done
+
+if [ -f "$mirror_refresh_plan" ]; then
+  for evidence in \
+    'status: completed' \
+    'scripts/test-mirror-refresh.sh' \
+    'make check' \
+    'hostile mutations' \
+    'git diff --check'; do
+    if ! grep -Fq "$evidence" "$mirror_refresh_plan"; then
+      fail "$mirror_refresh_plan must preserve completed evidence: $evidence"
     fi
   done
 fi

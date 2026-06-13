@@ -48,6 +48,10 @@ Keep canonical URLs and live-verification dates in `docs/sources.tsv`; use the
 opt-in live audit separately from credential-free offline GitHub Actions.
 Keep network-free live source audit tests in the canonical offline gate so curl
 failure handling is verified without contacting upstream pages.
+The offline mirror refresh recorder never downloads source content. It updates
+one existing manifest date and fingerprint only after validating the reviewed
+mirror's canonical first-line attribution; inspect the exact diff before any
+optional live source audit.
 Keep mirrored content fingerprints in the same manifest so an unreviewed local
 page edit cannot retain valid source metadata while changing the reviewed text.
 Reject source URLs in the local index that no longer map to checked-in mirrored

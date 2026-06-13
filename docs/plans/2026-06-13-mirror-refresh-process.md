@@ -1,6 +1,6 @@
 # Mirror Refresh Process
 
-status: pending
+status: completed
 
 ## Context
 
@@ -42,8 +42,25 @@ valid.
 
 ## Work Completed
 
-Pending implementation.
+- Added `scripts/record-mirror-refresh.sh` to validate one slug, date, unique
+  manifest row, mirror, canonical attribution, and SHA-256 before atomically
+  replacing only the selected manifest row.
+- Added `scripts/test-mirror-refresh.sh` with isolated success, unrelated-row,
+  invalid slug/date, missing row, attribution, and duplicate-row fixtures.
+- Added the parameterized `make record-refresh` target and documented the
+  human-reviewed source comparison, recording, diff review, offline check, and
+  optional live audit sequence.
+- Extended the offline validator with exact recorder, fixture, Make,
+  documentation, and completed-plan contracts.
 
 ## Verification Completed
 
-Pending implementation and validation.
+- `sh -n` and focused `scripts/test-mirror-refresh.sh` passed.
+- `make lint`, `make test`, `make build`, `make verify`, and `make check` passed
+  the 25-page offline mirror/index/fingerprint gate and both fixture suites.
+- Eight focused hostile mutations covering slug validation, unique-row
+  selection, attribution, hashing, atomic replacement, fixture coverage, Make
+  wiring, and plan status were rejected.
+- `git diff --check`, shell syntax, exact-path, generated-artifact, secret,
+  mirrored-page, source-manifest, index, LLM listing, redirect, workflow, and
+  existing-plan preservation scans passed.
