@@ -6,7 +6,7 @@ date: 2026-06-14
 
 # Location-Independent Make Gates
 
-status: planned
+status: completed
 
 ## Summary
 
@@ -81,3 +81,27 @@ completed evidence only after final validation.
 Completion requires all offline aliases from root and `/tmp`, deterministic
 external live-audit wiring, record-refresh usage and dry-run checks, six hostile
 Make mutations, shell syntax, and exact protected-content audits.
+
+## Work Completed
+
+- Added an override-protected repository root and used it for the opt-in source
+  audit, mirror refresh recorder, offline checker, and both fixture suites.
+- Extended the offline checker to require the root declaration and every rooted
+  script recipe exactly.
+- Preserved all mirrored content, source metadata, fingerprints, indexes,
+  redirects, workflow, and network opt-in boundaries.
+
+## Verification Completed
+
+- The absolute Makefile path from /tmp passed all offline aliases with a hostile
+  `REPO_ROOT=/tmp` override; repository-root invocations also passed.
+- External `check-sources` passed all 25 manifest and fingerprint preflights
+  with a deterministic fake curl and no live network request.
+- External `record-refresh` rejected missing arguments, and its dry run retained
+  the selected slug, date, and repository-owned working directory without
+  changing the manifest.
+- The checker rejected six isolated hostile mutations covering root derivation
+  and every rooted script recipe after a disposable baseline passed.
+- POSIX shell syntax, `git diff --check`, intended-path, generated-artifact,
+  credential-pattern, dependency, mirrored-page, source-manifest, index, LLM
+  listing, redirect, workflow, and prior-plan preservation checks passed.
