@@ -3,6 +3,7 @@ set -eu
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT_DIR"
+. scripts/iso-date.sh
 
 missing=0
 count=0
@@ -19,11 +20,13 @@ source_availability_script="scripts/check-source-availability.sh"
 source_availability_tests="scripts/test-source-availability.sh"
 mirror_refresh_script="scripts/record-mirror-refresh.sh"
 mirror_refresh_tests="scripts/test-mirror-refresh.sh"
+iso_date_helper="scripts/iso-date.sh"
 source_manifest_plan="docs/plans/2026-06-12-canonical-source-manifest.md"
 content_fingerprint_plan="docs/plans/2026-06-13-mirrored-content-fingerprints.md"
 source_availability_test_plan="docs/plans/2026-06-13-live-source-audit-tests.md"
 mirror_refresh_plan="docs/plans/2026-06-13-mirror-refresh-process.md"
 location_independent_make_plan="docs/plans/2026-06-14-location-independent-make.md"
+calendar_date_plan="docs/plans/2026-06-15-calendar-date-validation.md"
 makefile="Makefile"
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
@@ -100,7 +103,7 @@ else
       https://creator.poe.com/docs/*) ;;
       *) fail "$manifest has a non-canonical source URL for $slug: $source_url" ;;
     esac
-    if ! printf '%s\n' "$verified_at" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+    if ! is_valid_iso_date "$verified_at"; then
       fail "$manifest has an invalid verification date for $slug: $verified_at"
     fi
     if ! printf '%s\n' "$content_sha256" | grep -Eq '^[0-9a-f]{64}$'; then
@@ -124,6 +127,73 @@ fi
 
 if [ ! -x "$source_availability_script" ]; then
   fail "$source_availability_script must exist and be executable"
+fi
+
+if [ ! -f "$iso_date_helper" ]; then
+  fail "$iso_date_helper is missing"
+else
+  for date_contract in \
+    'is_valid_iso_date()' \
+    'year % 400 == 0' \
+    'year % 4 == 0 && year % 100 != 0' \
+    'day >= 1 && day <= days'; do
+    if ! grep -Fq "$date_contract" "$iso_date_helper"; then
+      fail "$iso_date_helper must preserve calendar validation: $date_contract"
+    fi
+  done
+fi
+
+for date_consumer in "$source_availability_script" "$mirror_refresh_script" scripts/check-docs-index.sh; do
+  if ! grep -Fq 'is_valid_iso_date' "$date_consumer"; then
+    fail "$date_consumer must use the shared calendar-date validator"
+  fi
+done
+
+manifest_date_calls=$(sed -n '1,/if \[ ! -x "$source_availability_script"/p' scripts/check-docs-index.sh |
+  grep -Fc 'if ! is_valid_iso_date "$verified_at"; then' || true)
+if [ "$manifest_date_calls" -ne 1 ]; then
+  fail "scripts/check-docs-index.sh must validate each manifest date exactly once"
+fi
+
+date_line=$(grep -nF 'if ! is_valid_iso_date "$verified_at"; then' "$source_availability_script" | cut -d: -f1)
+curl_line=$(grep -nF 'result=$(curl \' "$source_availability_script" | cut -d: -f1)
+if [ -z "$date_line" ] || [ -z "$curl_line" ] || [ "$date_line" -ge "$curl_line" ]; then
+  fail "$source_availability_script must validate dates before invoking curl"
+fi
+
+for fixture_contract in \
+  'the live audit must reject impossible calendar dates' \
+  'the live audit must validate dates before invoking curl' \
+  '2024-02-29'; do
+  if ! grep -Fq "$fixture_contract" "$source_availability_tests"; then
+    fail "$source_availability_tests must preserve calendar-date coverage: $fixture_contract"
+  fi
+done
+
+for fixture_contract in \
+  'impossible dates must be rejected' \
+  'non-leap century dates must be rejected' \
+  'leap century dates must be accepted' \
+  'valid leap days must be accepted' \
+  '2000-02-29' \
+  '2024-02-29'; do
+  if ! grep -Fq "$fixture_contract" "$mirror_refresh_tests"; then
+    fail "$mirror_refresh_tests must preserve calendar-date coverage: $fixture_contract"
+  fi
+done
+
+if [ ! -f "$calendar_date_plan" ]; then
+  fail "$calendar_date_plan is missing"
+else
+  for evidence in \
+    'Status: Completed' \
+    '## Verification' \
+    'hostile mutations' \
+    'make check'; do
+    if ! grep -Fqi "$evidence" "$calendar_date_plan"; then
+      fail "$calendar_date_plan must preserve completed evidence: $evidence"
+    fi
+  done
 fi
 
 for live_contract in \

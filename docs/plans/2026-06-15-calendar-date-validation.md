@@ -1,6 +1,6 @@
 # Calendar Date Validation
 
-Status: In Progress
+Status: Completed
 
 ## Problem
 
@@ -28,11 +28,17 @@ after it has already contacted the canonical source.
 - Do not add dependencies or use platform-specific `date` flags.
 - Do not merge or close stacked pull requests without explicit authorization.
 
-## Verification: Pending
+## Verification: Completed
 
-- Run shell syntax checks, focused fixture suites, and the full offline Make
-  gate from the repository and an external directory.
-- Reject focused hostile mutations across calendar arithmetic, helper wiring,
-  pre-network ordering, fixtures, and completed plan evidence.
-- Audit the exact diff, generated artifacts, credentials, mirrored content,
-  manifest data, conflict markers, and whitespace before commit.
+- `sh -n` and `dash -n` passed for the helper and all changed shell scripts.
+- Focused source-audit and refresh fixtures passed impossible-day rejection,
+  pre-network ordering, ordinary leap-day, non-leap-century, and leap-century
+  cases without live network access.
+- Full `make check` passed from the repository root and through the absolute
+  Makefile path from `/tmp`.
+- Eight focused hostile mutations were rejected across February length,
+  Gregorian century rules, all three consumers, fixture wiring, and completed
+  plan evidence.
+- Final `git diff --check`, generated-artifact, credential-pattern,
+  conflict-marker, mirrored-content, manifest-data, and dependency scans passed
+  for the intended paths.

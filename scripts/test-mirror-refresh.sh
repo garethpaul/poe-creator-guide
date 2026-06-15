@@ -8,6 +8,7 @@ trap 'rm -rf "$WORK_DIR"' EXIT HUP INT TERM
 FIXTURE_ROOT="$WORK_DIR/repository"
 mkdir -p "$FIXTURE_ROOT/docs" "$FIXTURE_ROOT/scripts"
 cp "$ROOT_DIR/scripts/record-mirror-refresh.sh" "$FIXTURE_ROOT/scripts/"
+cp "$ROOT_DIR/scripts/iso-date.sh" "$FIXTURE_ROOT/scripts/"
 chmod +x "$FIXTURE_ROOT/scripts/record-mirror-refresh.sh"
 
 fail() {
@@ -44,6 +45,12 @@ printf '%s\n' "$output" | grep -Fq "Recorded reviewed refresh for test-source at
 
 if run_recorder '../escape' 2026-06-13 >/dev/null 2>&1; then fail "invalid slugs must be rejected"; fi
 if run_recorder test-source 2026/06/13 >/dev/null 2>&1; then fail "invalid dates must be rejected"; fi
+if run_recorder test-source 2026-02-30 >/dev/null 2>&1; then fail "impossible dates must be rejected"; fi
+if run_recorder test-source 1900-02-29 >/dev/null 2>&1; then fail "non-leap century dates must be rejected"; fi
+run_recorder test-source 2000-02-29 >/dev/null
+[ "$(cut -f3 "$FIXTURE_ROOT/docs/sources.tsv" | sed -n '1p')" = "2000-02-29" ] || fail "leap century dates must be accepted"
+run_recorder test-source 2024-02-29 >/dev/null
+[ "$(cut -f3 "$FIXTURE_ROOT/docs/sources.tsv" | sed -n '1p')" = "2024-02-29" ] || fail "valid leap days must be accepted"
 if run_recorder missing-source 2026-06-13 >/dev/null 2>&1; then fail "missing manifest rows must be rejected"; fi
 printf '%s\n' '<!-- Source: wrong -->' '# Refreshed guide' > "$FIXTURE_ROOT/docs/test-source.md"
 if run_recorder test-source 2026-06-14 >/dev/null 2>&1; then fail "incorrect source attribution must be rejected"; fi
