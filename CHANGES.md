@@ -1,5 +1,12 @@
 # Changes
 
+## 2026-06-17
+
+- Made the opt-in live source audit validate the complete manifest, safe local
+  mirror boundary, and all fingerprints before issuing any network request.
+- Added offline fixtures for empty, malformed, duplicate, traversal-shaped,
+  noncanonical, missing-mirror, and later-row preflight failures.
+
 ## 2026-06-13
 
 - Added an offline reviewed-mirror refresh recorder, atomic single-row manifest

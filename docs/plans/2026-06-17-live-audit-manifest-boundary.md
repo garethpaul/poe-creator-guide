@@ -1,6 +1,6 @@
 # Live Audit Manifest Boundary
 
-Status: Planned
+Status: Completed
 
 ## Problem
 
@@ -69,3 +69,25 @@ of the repository baseline.
   mirror existence, two-pass ordering, baseline wiring, and plan status.
 - Final exact-path diff, generated-artifact, secret-pattern, manifest-data,
   mirrored-content, dependency, and whitespace audits.
+
+## Work Completed
+
+- Added a complete local preflight for manifest shape, uniqueness, safe slugs,
+  canonical URLs, mirror existence, Gregorian dates, and fingerprints.
+- Bound both validation and request phases to one private manifest snapshot so
+  a later file change cannot alter the reviewed request set.
+- Added offline regression fixtures and durable baseline contracts for every
+  new boundary, plus maintainer guidance and changelog evidence.
+
+## Verification: Completed
+
+- `sh -n` and `dash -n` passed for all changed shell scripts.
+- Focused live-source and mirror-refresh fixture suites passed without network
+  access.
+- Full `make check` passed from the repository root and through the absolute
+  Makefile path from an external directory, first in an isolated final-state
+  projection and then against the exact worktree.
+- Ten hostile mutations were rejected across row shape, slug safety, canonical
+  host enforcement, duplicate slugs, mirror existence, fingerprint shape,
+  preflight ordering, snapshot reuse, fixture wiring, and completed plan
+  status.
