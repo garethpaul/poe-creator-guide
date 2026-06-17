@@ -35,6 +35,7 @@ fi
 
 [ -f "$MANIFEST" ] || fail "source manifest is missing: $MANIFEST"
 mirror="$ROOT_DIR/docs/$slug.md"
+[ ! -L "$mirror" ] || fail "mirror must not be a symbolic link: docs/$slug.md"
 [ -f "$mirror" ] || fail "mirror is missing: docs/$slug.md"
 
 row_count=$(awk -F '\t' -v slug="$slug" '$1 == slug { count += 1 } END { print count + 0 }' "$MANIFEST")

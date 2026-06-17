@@ -54,6 +54,7 @@ while IFS="$tab" read -r slug source_url verified_at content_sha256; do
     *) fail "source manifest has a non-canonical source URL for $slug: $source_url" ;;
   esac
   mirror="$ROOT_DIR/docs/$slug.md"
+  [ ! -L "$mirror" ] || fail "source manifest references symbolic link mirror: docs/$slug.md"
   [ -f "$mirror" ] || fail "source manifest references missing mirror: docs/$slug.md"
   if ! printf '%s\n' "$content_sha256" | grep -Eq '^[0-9a-f]{64}$'; then
     fail "$slug has an invalid SHA-256 fingerprint: $content_sha256"

@@ -1,6 +1,6 @@
 # Mirror Symlink Boundary
 
-Status: In Progress
+Status: Completed
 
 ## Problem
 
@@ -27,7 +27,8 @@ set while still appearing to validate a local mirror.
 ### U1. Mirror Type Validation
 
 Require each selected mirror to be a regular file and not a symbolic link in
-`check-source-availability.sh` and `record-mirror-refresh.sh`.
+the offline baseline, `check-source-availability.sh`, and
+`record-mirror-refresh.sh`.
 
 ### U2. Regression Coverage
 
@@ -57,3 +58,26 @@ the exact completed validation and hostile-mutation results.
 - Do not perform the opt-in live network audit.
 - Do not add dependencies or broaden the accepted mirror path format.
 - Do not merge or close stacked pull requests without explicit authorization.
+
+## Work Completed
+
+- Rejected symbolic-link mirrors before hashing in the offline baseline, live
+  source audit, and reviewed refresh recorder.
+- Added isolated external-target fixtures proving the audit performs no network
+  request and the recorder performs no manifest update for a symlink mirror.
+- Added durable baseline contracts, maintainer guidance, and changelog evidence
+  for the repository-bound mirror boundary.
+
+## Verification: Completed
+
+- `sh -n` and `dash -n` passed for all five changed shell scripts.
+- Focused live-source and mirror-refresh fixture suites passed without network
+  access.
+- Full `make check` passed from the repository root and through the absolute
+  Makefile path from an external directory in an isolated final-state
+  projection containing only the intended files.
+- Full `make check` then passed from both caller locations against the exact
+  worktree after the completed-plan contract was active.
+- Six hostile mutations were rejected across the live-audit guard, refresh
+  guard, offline baseline behavior, both fixture contracts, and completed plan
+  status.

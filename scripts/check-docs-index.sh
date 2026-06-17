@@ -28,6 +28,7 @@ mirror_refresh_plan="docs/plans/2026-06-13-mirror-refresh-process.md"
 location_independent_make_plan="docs/plans/2026-06-14-location-independent-make.md"
 calendar_date_plan="docs/plans/2026-06-15-calendar-date-validation.md"
 live_audit_boundary_plan="docs/plans/2026-06-17-live-audit-manifest-boundary.md"
+mirror_symlink_plan="docs/plans/2026-06-17-mirror-symlink-boundary.md"
 makefile="Makefile"
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
@@ -110,6 +111,10 @@ else
     if ! printf '%s\n' "$content_sha256" | grep -Eq '^[0-9a-f]{64}$'; then
       fail "$manifest has an invalid SHA-256 fingerprint for $slug: $content_sha256"
     fi
+    if [ -L "docs/$slug.md" ]; then
+      fail "$manifest references symbolic link mirror: docs/$slug.md"
+      continue
+    fi
     if [ ! -f "docs/$slug.md" ]; then
       fail "$manifest references missing mirror: docs/$slug.md"
       continue
@@ -181,6 +186,7 @@ for preflight_contract in \
   'source manifest contains duplicate canonical URLs' \
   'source manifest has an invalid slug' \
   'source manifest has a non-canonical source URL' \
+  'source manifest references symbolic link mirror' \
   'source manifest references missing mirror'; do
   if ! grep -Fq "$preflight_contract" "$source_availability_script"; then
     fail "$source_availability_script must preserve manifest preflight validation: $preflight_contract"
@@ -258,6 +264,7 @@ else
     'reject traversal-shaped slugs' \
     'reject non-canonical source URLs' \
     'reject missing mirrors' \
+    'reject symbolic link mirrors' \
     'reject malformed fingerprints' \
     'reject duplicate slugs' \
     'reject duplicate canonical URLs' \
@@ -267,6 +274,18 @@ else
       fail "$source_availability_tests must preserve the offline live-audit contract: $test_contract"
     fi
   done
+fi
+
+for symlink_contract in \
+  '[ ! -L "$mirror" ]' \
+  'mirror must not be a symbolic link'; do
+  if ! grep -Fq "$symlink_contract" "$mirror_refresh_script"; then
+    fail "$mirror_refresh_script must preserve mirror symlink rejection: $symlink_contract"
+  fi
+done
+
+if ! grep -Fq 'symbolic link mirrors must be rejected' "$mirror_refresh_tests"; then
+  fail "$mirror_refresh_tests must preserve mirror symlink coverage"
 fi
 
 if [ ! -f "$live_audit_boundary_plan" ]; then
@@ -279,6 +298,20 @@ else
     'make check'; do
     if ! grep -Fqi "$evidence" "$live_audit_boundary_plan"; then
       fail "$live_audit_boundary_plan must preserve completed evidence: $evidence"
+    fi
+  done
+fi
+
+if [ ! -f "$mirror_symlink_plan" ]; then
+  fail "$mirror_symlink_plan is missing"
+else
+  for evidence in \
+    'Status: Completed' \
+    '## Verification' \
+    'hostile mutations' \
+    'make check'; do
+    if ! grep -Fqi "$evidence" "$mirror_symlink_plan"; then
+      fail "$mirror_symlink_plan must preserve completed evidence: $evidence"
     fi
   done
 fi

@@ -59,8 +59,9 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Run `make check` or `make verify` before committing documentation index changes.
 - Run `make check-sources` when intentionally auditing current upstream source
   availability; it validates the complete manifest and every local fingerprint
-  before contacting Poe, then follows redirects and requires each canonical
-  manifest URL to return HTTP 200 without redirecting.
+  against regular, non-symlink mirrors before contacting Poe, then follows
+  redirects and requires each canonical manifest URL to return HTTP 200 without
+  redirecting.
 - Run `make record-refresh SLUG=<slug> VERIFIED_AT=<YYYY-MM-DD>` after manually
   reviewing and updating one mirrored page.
 - `make test` includes network-free live source audit tests that inject a fake
@@ -104,8 +105,9 @@ Use this mirror refresh process for one reviewed page at a time:
    changes. Preserve the exact canonical `<!-- Source: ... -->` comment as the
    first line.
 3. Run `make record-refresh SLUG=<slug> VERIFIED_AT=<YYYY-MM-DD>`. The recorder
-   validates the slug, date, unique manifest row, mirror, and attribution, then
-   atomically updates only that row's date and SHA-256 fingerprint.
+   validates the slug, date, unique manifest row, regular non-symlink mirror,
+   and attribution, then atomically updates only that row's date and SHA-256
+   fingerprint.
 4. Inspect the mirror and manifest diff and run `make check`. Run
    `make check-sources` separately only when live verification is intended.
 

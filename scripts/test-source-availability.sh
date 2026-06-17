@@ -159,6 +159,16 @@ printf 'missing-source\thttps://creator.poe.com/docs/missing-source\t2026-06-13\
 assert_preflight_rejected "source manifest references missing mirror: docs/missing-source.md" \
   "the live audit must reject missing mirrors"
 
+printf '%s\n' '<!-- Source: external fixture -->' '# External source' > "$WORK_DIR/external-source.md"
+external_sha256=$(sha256_file "$WORK_DIR/external-source.md")
+rm -f "$FIXTURE_ROOT/docs/test-source.md"
+ln -s "$WORK_DIR/external-source.md" "$FIXTURE_ROOT/docs/test-source.md"
+printf 'test-source\t%s\t2026-06-13\t%s\n' "$SOURCE_URL" "$external_sha256" > "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "source manifest references symbolic link mirror: docs/test-source.md" \
+  "the live audit must reject symbolic link mirrors"
+rm -f "$FIXTURE_ROOT/docs/test-source.md"
+printf '%s\n' '<!-- Source: test fixture -->' '# Test source' > "$FIXTURE_ROOT/docs/test-source.md"
+
 printf 'test-source\t%s\t2026-06-13\tinvalid\n' "$SOURCE_URL" > "$FIXTURE_ROOT/docs/sources.tsv"
 assert_preflight_rejected "test-source has an invalid SHA-256 fingerprint: invalid" \
   "the live audit must reject malformed fingerprints"

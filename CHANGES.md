@@ -2,6 +2,10 @@
 
 ## 2026-06-17
 
+- Rejected symbolic-link mirrors in offline validation, opt-in live audits, and
+  reviewed refresh recording so fingerprints remain bound to checked-in files.
+- Added isolated audit and refresh fixtures proving symlink rejection occurs
+  before network access or manifest mutation.
 - Made the opt-in live source audit validate the complete manifest, safe local
   mirror boundary, and all fingerprints before issuing any network request.
 - Added offline fixtures for empty, malformed, duplicate, traversal-shaped,
