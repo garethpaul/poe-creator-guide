@@ -2,6 +2,8 @@
 
 ## 2026-06-13
 
+- Added an offline reviewed-mirror refresh recorder, atomic single-row manifest
+  updates, a Make target, and fixture coverage for success and rejection paths.
 - Added network-free live source audit tests for curl arguments, HTTP failures,
   redirects, transport errors, and fingerprint preflight ordering.
 - Added mirrored content fingerprints to every canonical source row and made

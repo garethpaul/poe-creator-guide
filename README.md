@@ -60,6 +60,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Run `make check-sources` when intentionally auditing current upstream source
   availability; it follows redirects and requires each canonical manifest URL
   to return HTTP 200 without redirecting.
+- Run `make record-refresh SLUG=<slug> VERIFIED_AT=<YYYY-MM-DD>` after manually
+  reviewing and updating one mirrored page.
 - `make test` includes network-free live source audit tests that inject a fake
   curl client and exercise success, failure, redirect, and fingerprint paths.
 - Pinned, credential-free, read-only GitHub Actions runs the same
@@ -90,6 +92,24 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   navigation consistently uses validated `/docs/...` targets.
 - The validator also protects the hosted workflow contract: read-only
   permissions, a pinned checkout action, and the canonical `make check` command.
+
+## Refreshing a Mirror
+
+Use this mirror refresh process for one reviewed page at a time:
+
+1. Open the canonical URL already recorded for the slug in `docs/sources.tsv`.
+2. Compare it with `docs/<slug>.md` and manually apply only reviewed source
+   changes. Preserve the exact canonical `<!-- Source: ... -->` comment as the
+   first line.
+3. Run `make record-refresh SLUG=<slug> VERIFIED_AT=<YYYY-MM-DD>`. The recorder
+   validates the slug, date, unique manifest row, mirror, and attribution, then
+   atomically updates only that row's date and SHA-256 fingerprint.
+4. Inspect the mirror and manifest diff and run `make check`. Run
+   `make check-sources` separately only when live verification is intended.
+
+The recorder never downloads or replaces prose, infers canonical URLs, adds
+manifest rows, or contacts Poe. New pages and URL changes require explicit
+reviewed edits to the manifest, index, and `llms.txt`.
 
 When the required SDK or runtime is unavailable, use static checks and source review first, then verify on a machine that has the matching platform toolchain.
 
