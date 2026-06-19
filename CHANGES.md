@@ -1,7 +1,22 @@
 # Changes
 
+## 2026-06-19
+
+- Rejected unexpected hosted files and symbolic links under `docs/` so the
+  static site cannot publish unreviewed HTML or assets outside the mirror
+  manifest and approved README SVG.
+- Added docs-index fixture tests for unexpected hosted files and raw active
+  Markdown HTML outside fenced code blocks.
+- Centralized canonical Poe docs URL validation and rejected dot-segment,
+  encoded, malformed, or non-docs source URLs before live audit requests or
+  refresh recording.
+
 ## 2026-06-17
 
+- Rejected symbolic-link mirrors in offline validation, opt-in live audits, and
+  reviewed refresh recording so fingerprints remain bound to checked-in files.
+- Added isolated audit and refresh fixtures proving symlink rejection occurs
+  before network access or manifest mutation.
 - Made the opt-in live source audit validate the complete manifest, safe local
   mirror boundary, and all fingerprints before issuing any network request.
 - Added offline fixtures for empty, malformed, duplicate, traversal-shaped,

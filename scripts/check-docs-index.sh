@@ -1,9 +1,11 @@
 #!/usr/bin/env sh
+# shellcheck disable=SC2016,SC1003
 set -eu
 
-ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+ROOT_DIR=$(CDPATH=; cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT_DIR"
 . scripts/iso-date.sh
+. scripts/source-url.sh
 
 missing=0
 count=0
@@ -17,10 +19,12 @@ manifest_count=0
 fingerprint_count=0
 manifest="docs/sources.tsv"
 source_availability_script="scripts/check-source-availability.sh"
+docs_index_tests="scripts/test-docs-index.sh"
 source_availability_tests="scripts/test-source-availability.sh"
 mirror_refresh_script="scripts/record-mirror-refresh.sh"
 mirror_refresh_tests="scripts/test-mirror-refresh.sh"
 iso_date_helper="scripts/iso-date.sh"
+source_url_helper="scripts/source-url.sh"
 source_manifest_plan="docs/plans/2026-06-12-canonical-source-manifest.md"
 content_fingerprint_plan="docs/plans/2026-06-13-mirrored-content-fingerprints.md"
 source_availability_test_plan="docs/plans/2026-06-13-live-source-audit-tests.md"
@@ -28,6 +32,7 @@ mirror_refresh_plan="docs/plans/2026-06-13-mirror-refresh-process.md"
 location_independent_make_plan="docs/plans/2026-06-14-location-independent-make.md"
 calendar_date_plan="docs/plans/2026-06-15-calendar-date-validation.md"
 live_audit_boundary_plan="docs/plans/2026-06-17-live-audit-manifest-boundary.md"
+mirror_symlink_plan="docs/plans/2026-06-17-mirror-symlink-boundary.md"
 makefile="Makefile"
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
@@ -41,6 +46,18 @@ workflow=".github/workflows/check.yml"
 
 fail() {
   printf '%s\n' "$1" >&2
+  missing=1
+}
+
+fail_each_line() {
+  prefix=$1
+  lines=$2
+  [ -n "$lines" ] || return 0
+  printf '%s\n' "$lines" |
+    while IFS= read -r line; do
+      [ -n "$line" ] || continue
+      printf '%s%s\n' "$prefix" "$line" >&2
+    done
   missing=1
 }
 
@@ -76,6 +93,56 @@ heading_anchors() {
     sed -E 's/[^a-z0-9 _-]//g; s/[[:space:]]+/-/g; s/-+/-/g; s/^-//; s/-$//'
 }
 
+active_markdown_html_locations() {
+  awk '
+    function strip_inline_code(line, output) {
+      output = ""
+      while (match(line, /`[^`]*`/)) {
+        output = output substr(line, 1, RSTART - 1)
+        line = substr(line, RSTART + RLENGTH)
+      }
+      return output line
+    }
+    /^```/ || /^ ```/ || /^  ```/ || /^   ```/ ||
+    /^~~~/ || /^ ~~~/ || /^  ~~~/ || /^   ~~~/ {
+      fenced = !fenced
+      next
+    }
+    !fenced {
+      line = tolower(strip_inline_code($0))
+      if (line ~ /<[[:space:]\/]*(script|iframe|object|embed|form|input|button|meta|base)([[:space:]>\/]|$)/ ||
+          line ~ /javascript[[:space:]]*:/ ||
+          line ~ /on[a-z]+[[:space:]]*=/) {
+        printf "%s:%d\n", FILENAME, FNR
+      }
+    }
+  ' "$1"
+}
+
+for markdown_file in index.md docs/*.md docs/plans/*.md; do
+  [ -f "$markdown_file" ] || continue
+  active_html=$(active_markdown_html_locations "$markdown_file")
+  if [ -n "$active_html" ]; then
+    fail_each_line "active HTML outside a fenced code block: " "$active_html"
+  fi
+done
+
+unexpected_docs_files=$(
+  find docs -type f \
+    ! -name '*.md' \
+    ! -name 'sources.tsv' \
+    ! -name 'readme-overview.svg' |
+    sort || true
+)
+if [ -n "$unexpected_docs_files" ]; then
+  fail_each_line "unexpected file under docs/: " "$unexpected_docs_files"
+fi
+
+unexpected_docs_symlinks=$(find docs -type l | sort || true)
+if [ -n "$unexpected_docs_symlinks" ]; then
+  fail_each_line "unexpected symbolic link under docs/: " "$unexpected_docs_symlinks"
+fi
+
 if [ ! -f "$manifest" ]; then
   fail "$manifest is missing"
 else
@@ -100,15 +167,18 @@ else
     case "$slug" in
       *[!A-Za-z0-9._-]*) fail "$manifest has an invalid slug: $slug" ;;
     esac
-    case "$source_url" in
-      https://creator.poe.com/docs/*) ;;
-      *) fail "$manifest has a non-canonical source URL for $slug: $source_url" ;;
-    esac
+    if ! is_canonical_poe_docs_url "$source_url"; then
+      fail "$manifest has a non-canonical source URL for $slug: $source_url"
+    fi
     if ! is_valid_iso_date "$verified_at"; then
       fail "$manifest has an invalid verification date for $slug: $verified_at"
     fi
     if ! printf '%s\n' "$content_sha256" | grep -Eq '^[0-9a-f]{64}$'; then
       fail "$manifest has an invalid SHA-256 fingerprint for $slug: $content_sha256"
+    fi
+    if [ -L "docs/$slug.md" ]; then
+      fail "$manifest references symbolic link mirror: docs/$slug.md"
+      continue
     fi
     if [ ! -f "docs/$slug.md" ]; then
       fail "$manifest references missing mirror: docs/$slug.md"
@@ -144,9 +214,29 @@ else
   done
 fi
 
+if [ ! -f "$source_url_helper" ]; then
+  fail "$source_url_helper is missing"
+else
+  for source_url_contract in \
+    'is_canonical_poe_docs_url()' \
+    'https://creator.poe.com/docs/*' \
+    '*/../*' \
+    '*[!A-Za-z0-9._/-]*'; do
+    if ! grep -Fq "$source_url_contract" "$source_url_helper"; then
+      fail "$source_url_helper must preserve canonical source URL validation: $source_url_contract"
+    fi
+  done
+fi
+
 for date_consumer in "$source_availability_script" "$mirror_refresh_script" scripts/check-docs-index.sh; do
   if ! grep -Fq 'is_valid_iso_date' "$date_consumer"; then
     fail "$date_consumer must use the shared calendar-date validator"
+  fi
+done
+
+for source_url_consumer in "$source_availability_script" "$mirror_refresh_script" scripts/check-docs-index.sh; do
+  if ! grep -Fq 'is_canonical_poe_docs_url' "$source_url_consumer"; then
+    fail "$source_url_consumer must use the shared canonical source URL validator"
   fi
 done
 
@@ -181,6 +271,7 @@ for preflight_contract in \
   'source manifest contains duplicate canonical URLs' \
   'source manifest has an invalid slug' \
   'source manifest has a non-canonical source URL' \
+  'source manifest references symbolic link mirror' \
   'source manifest references missing mirror'; do
   if ! grep -Fq "$preflight_contract" "$source_availability_script"; then
     fail "$source_availability_script must preserve manifest preflight validation: $preflight_contract"
@@ -239,6 +330,20 @@ if ! grep -Fq 'check-sources:' "$makefile" ||
   fail "$makefile must expose the opt-in check-sources command"
 fi
 
+if [ ! -x "$docs_index_tests" ]; then
+  fail "$docs_index_tests must exist and be executable"
+else
+  for test_contract in \
+    'unexpected hosted docs files must be rejected' \
+    'raw active HTML in mirrored Markdown must be rejected' \
+    'record-mirror-refresh.sh' \
+    'Docs index contract tests passed'; do
+    if ! grep -Fq -- "$test_contract" "$docs_index_tests"; then
+      fail "$docs_index_tests must preserve the docs-index fixture contract: $test_contract"
+    fi
+  done
+fi
+
 if [ ! -x "$source_availability_tests" ]; then
   fail "$source_availability_tests must exist and be executable"
 else
@@ -257,7 +362,9 @@ else
     'reject empty manifest fields' \
     'reject traversal-shaped slugs' \
     'reject non-canonical source URLs' \
+    'reject dot-segment source URLs' \
     'reject missing mirrors' \
+    'reject symbolic link mirrors' \
     'reject malformed fingerprints' \
     'reject duplicate slugs' \
     'reject duplicate canonical URLs' \
@@ -267,6 +374,18 @@ else
       fail "$source_availability_tests must preserve the offline live-audit contract: $test_contract"
     fi
   done
+fi
+
+for symlink_contract in \
+  '[ ! -L "$mirror" ]' \
+  'mirror must not be a symbolic link'; do
+  if ! grep -Fq "$symlink_contract" "$mirror_refresh_script"; then
+    fail "$mirror_refresh_script must preserve mirror symlink rejection: $symlink_contract"
+  fi
+done
+
+if ! grep -Fq 'symbolic link mirrors must be rejected' "$mirror_refresh_tests"; then
+  fail "$mirror_refresh_tests must preserve mirror symlink coverage"
 fi
 
 if [ ! -f "$live_audit_boundary_plan" ]; then
@@ -279,6 +398,20 @@ else
     'make check'; do
     if ! grep -Fqi "$evidence" "$live_audit_boundary_plan"; then
       fail "$live_audit_boundary_plan must preserve completed evidence: $evidence"
+    fi
+  done
+fi
+
+if [ ! -f "$mirror_symlink_plan" ]; then
+  fail "$mirror_symlink_plan is missing"
+else
+  for evidence in \
+    'Status: Completed' \
+    '## Verification' \
+    'hostile mutations' \
+    'make check'; do
+    if ! grep -Fqi "$evidence" "$mirror_symlink_plan"; then
+      fail "$mirror_symlink_plan must preserve completed evidence: $evidence"
     fi
   done
 fi
@@ -386,6 +519,7 @@ for contract in \
   '.PHONY: check check-sources record-refresh lint test build verify' \
   'record-refresh:' \
   'scripts/record-mirror-refresh.sh "$(SLUG)" "$(VERIFIED_AT)"' \
+  'scripts/test-docs-index.sh' \
   'scripts/test-mirror-refresh.sh'; do
   if ! grep -Fq "$contract" "$makefile"; then
     fail "$makefile must preserve the refresh target contract: $contract"
@@ -397,6 +531,7 @@ for contract in \
   'cd "$(REPO_ROOT)" && scripts/check-source-availability.sh' \
   'cd "$(REPO_ROOT)" && scripts/record-mirror-refresh.sh "$(SLUG)" "$(VERIFIED_AT)"' \
   'cd "$(REPO_ROOT)" && scripts/check-docs-index.sh' \
+  'cd "$(REPO_ROOT)" && scripts/test-docs-index.sh' \
   'cd "$(REPO_ROOT)" && scripts/test-source-availability.sh' \
   'cd "$(REPO_ROOT)" && scripts/test-mirror-refresh.sh'; do
   if ! grep -Fq "$contract" "$makefile"; then
@@ -597,13 +732,7 @@ duplicate_index_source_urls=$(
 )
 
 if [ -n "$duplicate_index_source_urls" ]; then
-  old_ifs=$IFS
-  IFS='
-'
-  for url in $duplicate_index_source_urls; do
-    fail "index.md duplicate source URL: $url"
-  done
-  IFS=$old_ifs
+  fail_each_line "index.md duplicate source URL: " "$duplicate_index_source_urls"
 fi
 
 duplicate_index_local_refs=$(
@@ -614,13 +743,7 @@ duplicate_index_local_refs=$(
 )
 
 if [ -n "$duplicate_index_local_refs" ]; then
-  old_ifs=$IFS
-  IFS='
-'
-  for ref in $duplicate_index_local_refs; do
-    fail "index.md duplicate local docs link: $ref"
-  done
-  IFS=$old_ifs
+  fail_each_line "index.md duplicate local docs link: " "$duplicate_index_local_refs"
 fi
 
 duplicate_urls=$(
@@ -630,13 +753,7 @@ duplicate_urls=$(
 )
 
 if [ -n "$duplicate_urls" ]; then
-  old_ifs=$IFS
-  IFS='
-'
-  for url in $duplicate_urls; do
-    fail "llms.txt duplicate source URL: $url"
-  done
-  IFS=$old_ifs
+  fail_each_line "llms.txt duplicate source URL: " "$duplicate_urls"
 fi
 
 duplicate_titles=$(
@@ -647,24 +764,12 @@ duplicate_titles=$(
 )
 
 if [ -n "$duplicate_titles" ]; then
-  old_ifs=$IFS
-  IFS='
-'
-  for title in $duplicate_titles; do
-    fail "llms.txt duplicate doc title: $title"
-  done
-  IFS=$old_ifs
+  fail_each_line "llms.txt duplicate doc title: " "$duplicate_titles"
 fi
 
 legacy_local_links=$(grep -En '\]\((doc:[^ )]+|\.\./[^ )]+\.md(#[^ )]+)?)\)' index.md docs/*.md || true)
 if [ -n "$legacy_local_links" ]; then
-  old_ifs=$IFS
-  IFS='
-'
-  for match in $legacy_local_links; do
-    fail "legacy local documentation link must use /docs/<slug>: $match"
-  done
-  IFS=$old_ifs
+  fail_each_line "legacy local documentation link must use /docs/<slug>: " "$legacy_local_links"
 fi
 
 for file in index.md docs/*.md; do

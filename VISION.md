@@ -46,6 +46,10 @@ Priority:
 - Keep HTML redirect references aligned to one mirrored document
 - Keep mirror refreshes human-reviewed, reproducible, and atomically recorded
   without automatic prose replacement
+- Keep hosted `docs/` content limited to reviewed Markdown mirrors, completed
+  plans, the source manifest, and approved static assets
+- Reject raw active HTML outside fenced Markdown examples and reject
+  dot-segment or encoded canonical source URL paths
 
 Next priorities:
 

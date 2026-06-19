@@ -15,6 +15,7 @@ lint:
 	cd "$(REPO_ROOT)" && scripts/check-docs-index.sh
 
 test: lint
+	cd "$(REPO_ROOT)" && scripts/test-docs-index.sh
 	cd "$(REPO_ROOT)" && scripts/test-source-availability.sh
 	cd "$(REPO_ROOT)" && scripts/test-mirror-refresh.sh
 

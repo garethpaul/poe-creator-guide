@@ -1,9 +1,10 @@
 #!/usr/bin/env sh
 set -eu
 
-ROOT_DIR=${POE_CREATOR_GUIDE_ROOT:-$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)}
+ROOT_DIR=${POE_CREATOR_GUIDE_ROOT:-$(CDPATH=; cd -- "$(dirname -- "$0")/.." && pwd)}
 MANIFEST="$ROOT_DIR/docs/sources.tsv"
 . "$ROOT_DIR/scripts/iso-date.sh"
+. "$ROOT_DIR/scripts/source-url.sh"
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -35,15 +36,15 @@ fi
 
 [ -f "$MANIFEST" ] || fail "source manifest is missing: $MANIFEST"
 mirror="$ROOT_DIR/docs/$slug.md"
+[ ! -L "$mirror" ] || fail "mirror must not be a symbolic link: docs/$slug.md"
 [ -f "$mirror" ] || fail "mirror is missing: docs/$slug.md"
 
 row_count=$(awk -F '\t' -v slug="$slug" '$1 == slug { count += 1 } END { print count + 0 }' "$MANIFEST")
 [ "$row_count" -eq 1 ] || fail "source manifest must contain exactly one row for: $slug"
 source_url=$(awk -F '\t' -v slug="$slug" '$1 == slug { print $2 }' "$MANIFEST")
-case "$source_url" in
-  https://creator.poe.com/docs/*) ;;
-  *) fail "source manifest has an invalid canonical URL for: $slug" ;;
-esac
+if ! is_canonical_poe_docs_url "$source_url"; then
+  fail "source manifest has an invalid canonical URL for: $slug"
+fi
 
 expected_comment="<!-- Source: $source_url -->"
 first_line=$(sed -n '1p' "$mirror")
