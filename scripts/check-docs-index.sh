@@ -9,10 +9,16 @@ redirect_count=0
 plan_count=0
 source_attribution_count=0
 index_source_pair_count=0
+manifest_count=0
+manifest="docs/sources.tsv"
+source_availability_script="scripts/check-source-availability.sh"
+source_manifest_plan="docs/plans/2026-06-12-canonical-source-manifest.md"
+makefile="Makefile"
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
 index_source_url_plan="docs/plans/2026-06-09-index-source-url-validation.md"
 index_dedup_plan="docs/plans/2026-06-09-index-entry-deduplication.md"
+ci_plan="docs/plans/2026-06-10-ci-baseline.md"
 hosted_validation_plan="docs/plans/2026-06-10-hosted-docs-validation.md"
 fragment_validation_plan="docs/plans/2026-06-10-local-fragment-validation.md"
 legacy_local_link_plan="docs/plans/2026-06-12-legacy-local-link-validation.md"
@@ -38,6 +44,72 @@ heading_anchors() {
     sed -E 's/[^a-z0-9 _-]//g; s/[[:space:]]+/-/g; s/-+/-/g; s/^-//; s/-$//'
 }
 
+if [ ! -f "$manifest" ]; then
+  fail "$manifest is missing"
+else
+  malformed_manifest_rows=$(awk -F '\t' 'NF != 3 || $1 == "" || $2 == "" || $3 == "" { print NR }' "$manifest")
+  if [ -n "$malformed_manifest_rows" ]; then
+    fail "$manifest must contain exactly three non-empty tab-separated fields per row"
+  fi
+
+  duplicate_manifest_slugs=$(cut -f1 "$manifest" | sort | uniq -d || true)
+  duplicate_manifest_urls=$(cut -f2 "$manifest" | sort | uniq -d || true)
+  if [ -n "$duplicate_manifest_slugs" ]; then
+    fail "$manifest contains duplicate local slugs: $duplicate_manifest_slugs"
+  fi
+  if [ -n "$duplicate_manifest_urls" ]; then
+    fail "$manifest contains duplicate canonical URLs: $duplicate_manifest_urls"
+  fi
+
+  tab=$(printf '\t')
+  while IFS="$tab" read -r slug source_url verified_at; do
+    [ -n "$slug" ] || continue
+    manifest_count=$((manifest_count + 1))
+    case "$slug" in
+      *[!A-Za-z0-9._-]*) fail "$manifest has an invalid slug: $slug" ;;
+    esac
+    case "$source_url" in
+      https://creator.poe.com/docs/*) ;;
+      *) fail "$manifest has a non-canonical source URL for $slug: $source_url" ;;
+    esac
+    if ! printf '%s\n' "$verified_at" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+      fail "$manifest has an invalid verification date for $slug: $verified_at"
+    fi
+    if [ ! -f "docs/$slug.md" ]; then
+      fail "$manifest references missing mirror: docs/$slug.md"
+    fi
+  done < "$manifest"
+fi
+
+if [ ! -x "$source_availability_script" ]; then
+  fail "$source_availability_script must exist and be executable"
+fi
+
+for live_contract in \
+  '--location' \
+  "status" \
+  'final_url' \
+  'Live source audit passed'; do
+  if ! grep -Fq -- "$live_contract" "$source_availability_script"; then
+    fail "$source_availability_script must preserve the live source contract: $live_contract"
+  fi
+done
+
+if ! grep -Fq 'check-sources:' "$makefile" ||
+   ! grep -Fq 'scripts/check-source-availability.sh' "$makefile"; then
+  fail "$makefile must expose the opt-in check-sources command"
+fi
+
+for source_documentation in README.md VISION.md SECURITY.md CHANGES.md; do
+  if ! grep -Fq 'docs/sources.tsv' "$source_documentation"; then
+    fail "$source_documentation must document docs/sources.tsv"
+  fi
+done
+
+if [ ! -f "$source_manifest_plan" ]; then
+  fail "$source_manifest_plan is missing"
+fi
+
 for path in docs/*.md; do
   [ -f "$path" ] || continue
 
@@ -45,7 +117,11 @@ for path in docs/*.md; do
   slug=${slug%.md}
   count=$((count + 1))
 
-  source_url="https://creator.poe.com/docs/$slug"
+  source_url=$(awk -F '\t' -v slug="$slug" '$1 == slug { print $2 }' "$manifest")
+  if [ -z "$source_url" ]; then
+    fail "$manifest is missing source metadata for $path"
+    continue
+  fi
   source_comment="<!-- Source: $source_url -->"
   local_url="/docs/$slug"
 
@@ -84,11 +160,15 @@ if [ "$count" -eq 0 ]; then
   fail "no Markdown documents found under docs/"
 fi
 
+if [ "$manifest_count" -ne "$count" ]; then
+  fail "$manifest must contain exactly one row for each mirrored page: $manifest_count rows for $count pages"
+fi
+
 for plan in docs/plans/*.md; do
   [ -f "$plan" ] || continue
   plan_count=$((plan_count + 1))
 
-  if ! grep -Fqi "status: completed" "$plan"; then
+  if [ "$(grep -Eic '^status: completed$' "$plan")" -ne 1 ]; then
     fail "$plan must record status: completed"
   fi
 done
@@ -113,6 +193,14 @@ if [ ! -f "$index_dedup_plan" ]; then
   fail "$index_dedup_plan is missing"
 fi
 
+if [ ! -f "$ci_plan" ]; then
+  fail "$ci_plan is missing"
+fi
+
+if ! grep -Fq "Status: Completed" "$ci_plan" ||
+   ! grep -Fq "make check" "$ci_plan"; then
+  fail "$ci_plan must record completed status and make check verification"
+fi
 if [ ! -f "$hosted_validation_plan" ]; then
   fail "$hosted_validation_plan is missing"
 fi
@@ -128,36 +216,47 @@ fi
 if [ ! -f "$workflow" ]; then
   fail "$workflow is missing"
 else
-  if ! grep -Fxq 'permissions:' "$workflow" || ! grep -Fxq '  contents: read' "$workflow"; then
-    fail "$workflow must declare read-only repository contents permission"
-  fi
+  checkout_contract=$(sed -n '/^      - name: Check out repository$/,/^      - name: Validate mirrored documentation$/p' "$workflow" | sed '$d')
+  expected_checkout_contract='      - name: Check out repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false'
+  action_count=$(grep -Ec '^[[:space:]]*(- )?uses:' "$workflow" || true)
+  credential_count=$(grep -Fc 'persist-credentials:' "$workflow" || true)
+  permissions_count=$(grep -Ec '^permissions:$' "$workflow" || true)
 
-  if ! grep -Fq 'uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10' "$workflow"; then
-    fail "$workflow must pin actions/checkout to the reviewed v6 commit"
-  fi
-
-  if ! grep -Eq '^[[:space:]]+run: make check$' "$workflow"; then
-    fail "$workflow must run the canonical make check gate"
+  if [ "$checkout_contract" != "$expected_checkout_contract" ] ||
+     [ "$action_count" -ne 1 ] ||
+     [ "$credential_count" -ne 1 ] ||
+     [ "$permissions_count" -ne 1 ] ||
+     grep -Eq '^[[:space:]]+[A-Za-z-]+:[[:space:]]+write[[:space:]]*$' "$workflow" ||
+     ! grep -Fxq '  contents: read' "$workflow" ||
+     ! grep -Fq 'cancel-in-progress: true' "$workflow" ||
+     ! grep -Fq 'runs-on: ubuntu-24.04' "$workflow" ||
+     ! grep -Fq 'timeout-minutes: 10' "$workflow" ||
+     ! grep -Fq 'workflow_dispatch:' "$workflow" ||
+     ! grep -Eq '^[[:space:]]+run: make check$' "$workflow"; then
+    fail "$workflow must keep singular pinned credential-free checkout, read-only permissions, manual dispatch, and bounded offline validation"
   fi
 fi
 
+for docs_baseline_file in README.md VISION.md SECURITY.md CHANGES.md; do
+  if ! grep -Fq "GitHub Actions" "$docs_baseline_file"; then
+    fail "$docs_baseline_file must document the GitHub Actions baseline"
+  fi
+done
+
 urls=$(grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' llms.txt | sort -u || true)
 for url in $urls; do
-  slug=${url##*/}
-  path="docs/$slug.md"
-
-  if [ ! -f "$path" ]; then
-    fail "llms.txt references $url but $path is missing"
+  if ! awk -F '\t' -v url="$url" '$2 == url { found = 1 } END { exit !found }' "$manifest"; then
+    fail "llms.txt references a source URL absent from $manifest: $url"
   fi
 done
 
 index_source_urls=$(grep -Eo 'https://creator\.poe\.com/docs/[A-Za-z0-9._/-]+' index.md | sort -u || true)
 for url in $index_source_urls; do
-  slug=${url##*/}
-  path="docs/$slug.md"
-
-  if [ ! -f "$path" ]; then
-    fail "index.md references $url but $path is missing"
+  if ! awk -F '\t' -v url="$url" '$2 == url { found = 1 } END { exit !found }' "$manifest"; then
+    fail "index.md references a source URL absent from $manifest: $url"
   fi
 done
 
@@ -298,4 +397,4 @@ if [ "$missing" -ne 0 ]; then
   exit 1
 fi
 
-printf 'Docs index check passed for %s mirrored pages, %s source attributions, %s paired index source links, %s unique llms source URLs, %s index source URLs, %s local doc links, %s heading fragments, %s HTML redirect links, and %s docs plans.\n' "$count" "$source_attribution_count" "$index_source_pair_count" "$(printf '%s\n' "$urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$(printf '%s\n' "$index_source_urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$link_count" "$fragment_count" "$redirect_count" "$plan_count"
+printf 'Docs index check passed for %s mirrored pages, %s canonical source rows, %s source attributions, %s paired index source links, %s unique llms source URLs, %s index source URLs, %s local doc links, %s heading fragments, %s HTML redirect links, and %s docs plans.\n' "$count" "$manifest_count" "$source_attribution_count" "$index_source_pair_count" "$(printf '%s\n' "$urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$(printf '%s\n' "$index_source_urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$link_count" "$fragment_count" "$redirect_count" "$plan_count"

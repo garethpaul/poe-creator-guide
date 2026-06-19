@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/canvas-app-quick-start -->
+<!-- Source: https://creator.poe.com/docs/canvas-apps/canvas-app-quick-start -->
 
 getting started
 ---------------

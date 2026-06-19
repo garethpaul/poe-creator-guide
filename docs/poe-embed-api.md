@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/poe-embed-api -->
+<!-- Source: https://creator.poe.com/docs/canvas-apps/poe-embed-api -->
 
 getting started
 ---------------

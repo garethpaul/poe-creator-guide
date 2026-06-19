@@ -51,12 +51,18 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 - Open `index.md` for the local Markdown index, or `index.html` for the GitHub Pages redirect.
 - Read `llms.txt` for source URLs and short page summaries.
+- Read `docs/sources.tsv` for the reviewed mapping from stable local slugs to
+  canonical upstream Poe URLs and the last live-verification date.
 
 ## Testing and Verification
 
 - Run `make check` or `make verify` before committing documentation index changes.
-- GitHub Actions runs the same dependency-free `make check` gate for pushes to
-  `main` and for pull requests.
+- Run `make check-sources` when intentionally auditing current upstream source
+  availability; it follows redirects and requires each canonical manifest URL
+  to return HTTP 200 without redirecting.
+- Pinned, credential-free, read-only GitHub Actions runs the same
+  dependency-free `make check` gate for pushes to `main`, pull requests, and
+  manual dispatches.
 - Run `make build` for the static documentation build gate; it uses the same
   offline docs validator as `make lint`.
 - The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, each mirrored page has a source attribution comment, each page's source URL remains visible in `index.md`, each index entry keeps the local page link paired with its canonical source link, local `/docs/<slug>` links point to checked-in pages, and `docs/plans/` contains a completed maintenance plan.
@@ -122,8 +128,13 @@ When the required SDK or runtime is unavailable, use static checks and source re
   per-page source attribution guard.
 - See `docs/plans/2026-06-09-first-line-source-attribution.md` for the
   first-line attribution placement guard.
+- See `docs/plans/2026-06-10-ci-baseline.md` for the GitHub Actions baseline.
+- See `docs/plans/2026-06-10-hosted-docs-validation.md` for the pinned,
+  read-only hosted validation boundary.
 - See `docs/plans/2026-06-12-legacy-local-link-validation.md` for normalized
   mirrored guide links and the legacy-link guard.
+- See `docs/plans/2026-06-12-canonical-source-manifest.md` for canonical source
+  mapping and the opt-in live availability audit.
 
 ## Contributing
 

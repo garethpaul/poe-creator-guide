@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/poe-protocol-specification -->
+<!-- Source: https://creator.poe.com/docs/server-bots/poe-protocol-specification -->
 
 getting started
 ---------------

@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/quick-start -->
+<!-- Source: https://creator.poe.com/docs/server-bots/quick-start -->
 
 getting started
 ---------------

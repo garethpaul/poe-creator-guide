@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/best-practice-text-generation -->
+<!-- Source: https://creator.poe.com/docs/prompt-bots/best-practice-text-generation -->
 
 getting started
 ---------------

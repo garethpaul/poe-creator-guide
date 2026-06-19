@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/canvas-limitations -->
+<!-- Source: https://creator.poe.com/docs/canvas-apps/canvas-limitations -->
 
 getting started
 ---------------

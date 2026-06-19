@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/fastapi_poe-python-reference -->
+<!-- Source: https://creator.poe.com/docs/server-bots/fastapi_poe-python-reference -->
 
 getting started
 ---------------
@@ -275,7 +275,7 @@ for LLMs that require role alternation between user and bot messages.
 ### `PoeBot.capture_cost`
 
 Used to capture variable costs for monetized and eligible bot creators.  
-Visit [https://creator.poe.com/docs/creator-monetization](/docs/creator-monetization) for more information.
+Visit [https://creator.poe.com/docs/resources/creator-monetization](/docs/creator-monetization) for more information.
 
 #### Parameters:
 
@@ -287,7 +287,7 @@ Visit [https://creator.poe.com/docs/creator-monetization](/docs/creator-monetiza
 ### `PoeBot.authorize_cost`
 
 Used to authorize a cost for monetized and eligible bot creators.  
-Visit [https://creator.poe.com/docs/creator-monetization](/docs/creator-monetization) for more information.
+Visit [https://creator.poe.com/docs/resources/creator-monetization](/docs/creator-monetization) for more information.
 
 #### Parameters:
 
@@ -342,7 +342,7 @@ bot locally. The parameters are the same as they are for `make_app`.
 
 The Entry point for the Bot Query API. This API allows you to use other bots on Poe for  
 inference in response to a user message. For more details, checkout:  
-[https://creator.poe.com/docs/accessing-other-bots-on-poe](/docs/accessing-other-bots-on-poe)
+[https://creator.poe.com/docs/server-bots/accessing-other-bots-on-poe](/docs/accessing-other-bots-on-poe)
 
 #### Parameters:
 
@@ -477,7 +477,7 @@ Similar to `Partial Response`. Yield this to communicate `meta` events from serv
   The currently supported values are `text/plain` and `text/markdown`.
 * `refetch_settings` (`bool = False`): Used to trigger a settings fetch request from Poe. A more  
   robust way to trigger this is documented at:  
-  [https://creator.poe.com/docs/updating-bot-settings](/docs/updating-bot-settings)
+  [https://creator.poe.com/docs/server-bots/updating-bot-settings](/docs/updating-bot-settings)
 
 ---
 

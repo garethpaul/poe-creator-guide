@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/examples -->
+<!-- Source: https://creator.poe.com/docs/server-bots/examples -->
 
 getting started
 ---------------

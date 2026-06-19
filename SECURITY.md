@@ -33,6 +33,7 @@ Helpful reports include:
 - Review found database, model, query, or persistence-related code; changes in those areas should receive security-focused review before merge.
 - Review found secret-like configuration names that require careful review before use; changes in those areas should receive security-focused review before merge.
 - No primary dependency manifest was detected in the repository root. If dependencies are added later, include a manifest and prefer reproducible installation instructions.
+- GitHub Actions runs the offline `make check` docs baseline before review.
 
 ## Service and API Notes
 
@@ -43,6 +44,8 @@ page's source attribution comment intact as the first line so reviewers can
 trace guidance back to the canonical Poe creator docs before applying it.
 Keep each local index entry paired with its canonical Poe source URL so source
 context cannot be shuffled across mirrored pages.
+Keep canonical URLs and live-verification dates in `docs/sources.tsv`; use the
+opt-in live audit separately from credential-free offline GitHub Actions.
 Reject source URLs in the local index that no longer map to checked-in mirrored
 pages so readers are not sent to unreviewed or stale guidance.
 Reject duplicate local or source entries in the local index so mirrored pages
@@ -54,8 +57,8 @@ content reorganizations cannot silently leave stale section links.
 Reject legacy `doc:` and parent-relative Markdown targets so mirrored guide
 navigation cannot bypass validated `/docs/...` paths.
 The hosted validation workflow uses read-only repository access, a pinned
-checkout action, and the dependency-free offline docs gate to reduce CI supply
-chain and credential exposure.
+checkout action with credential persistence disabled, and the dependency-free
+offline docs gate to reduce CI supply-chain and credential exposure.
 
 ## Dependency and Supply Chain Security
 

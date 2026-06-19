@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/welcome-to-poe-for-creators -->
+<!-- Source: https://creator.poe.com/docs/intro -->
 
 getting started
 ---------------

@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/server-bots-functional-guides -->
+<!-- Source: https://creator.poe.com/docs/server-bots/server-bots-functional-guides -->
 
 getting started
 ---------------
@@ -133,7 +133,7 @@ app = App("gpt35turbo-poe")
 @asgi_app()
 def fastapi_app():
     bot = GPT35TurboBot()
-    # see https://creator.poe.com/docs/quick-start#configuring-the-access-credentials
+    # see https://creator.poe.com/docs/server-bots/quick-start#configuring-the-access-credentials
     app = fp.make_app(bot, access_key=<YOUR_ACCESS_KEY>, bot_name=<YOUR_BOT_NAME>)
     return app
 
@@ -186,7 +186,7 @@ app = App("imageresponse-poe")
 @asgi_app()
 def fastapi_app():
     bot = SampleImageResponseBot()
-    # see https://creator.poe.com/docs/quick-start#configuring-the-access-credentials
+    # see https://creator.poe.com/docs/server-bots/quick-start#configuring-the-access-credentials
     # app = fp.make_app(bot, access_key=<YOUR_ACCESS_KEY>, bot_name=<YOUR_BOT_NAME>)
     app = fp.make_app(bot, allow_without_key=True)
     return app
@@ -419,7 +419,7 @@ app = App("pdfsizebot-poe")
 @asgi_app()
 def fastapi_app():
     bot = PDFSizeBot()
-    # see https://creator.poe.com/docs/quick-start#configuring-the-access-credentials
+    # see https://creator.poe.com/docs/server-bots/quick-start#configuring-the-access-credentials
     app = fp.make_app(bot, access_key=<YOUR_ACCESS_KEY>, bot_name=<YOUR_BOT_NAME>)
     return app
 
@@ -473,7 +473,7 @@ app = App("attachment-output-demo-poe")
 @asgi_app()
 def fastapi_app():
     bot = AttachmentOutputDemoBot()
-    # see https://creator.poe.com/docs/quick-start#configuring-the-access-credentials
+    # see https://creator.poe.com/docs/server-bots/quick-start#configuring-the-access-credentials
     # app = fp.make_app(bot, access_key=<YOUR_ACCESS_KEY>, bot_name=<YOUR_BOT_NAME>)
     app = fp.make_app(bot, allow_without_key=True)
     return app
@@ -627,7 +627,7 @@ app = App("trivia-bot-poe")
 @asgi_app()
 def fastapi_app():
     bot = TriviaBotSample()
-    # see https://creator.poe.com/docs/quick-start#configuring-the-access-credentials
+    # see https://creator.poe.com/docs/server-bots/quick-start#configuring-the-access-credentials
     # app = fp.make_app(bot, access_key=<YOUR_ACCESS_KEY>, bot_name=<YOUR_BOT_NAME>)
     app = fp.make_app(bot, allow_without_key=True)
     return app
@@ -887,7 +887,7 @@ app = App("functioncalling-poe")
 @asgi_app()
 def fastapi_app():
     bot = GPT35FunctionCallingBot()
-    # see https://creator.poe.com/docs/quick-start#configuring-the-access-credentials
+    # see https://creator.poe.com/docs/server-bots/quick-start#configuring-the-access-credentials
     app = fp.make_app(bot, access_key=<YOUR_ACCESS_KEY>, bot_name=<YOUR_BOT_NAME>)
     return app
 
@@ -998,7 +998,7 @@ app = App("http-request-poe")
 @asgi_app()
 def fastapi_app():
     bot = HttpRequestBot()
-    # see https://creator.poe.com/docs/quick-start#configuring-the-access-credentials
+    # see https://creator.poe.com/docs/server-bots/quick-start#configuring-the-access-credentials
     app = fp.make_app(bot, access_key=<YOUR_ACCESS_KEY>, bot_name=<YOUR_BOT_NAME>)
     return app
 

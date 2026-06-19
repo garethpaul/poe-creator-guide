@@ -25,8 +25,8 @@ Priority:
 - Keep local heading fragments aligned with mirrored Markdown headings
 - Keep mirrored guide links on validated `/docs/...` paths instead of legacy
   `doc:` or parent-relative Markdown targets
-- Run the canonical dependency-free docs gate in hosted CI with read-only
-  permissions and pinned third-party actions
+- Run the canonical dependency-free docs gate in GitHub Actions with read-only
+  permissions and pinned, credential-free third-party actions
 - Record new maintenance plans under `docs/plans/`
 - Avoid hand-editing generated pages without noting the source
 - Keep per-page source attribution comments in mirrored docs
@@ -34,6 +34,10 @@ Priority:
 - Keep source links visible for each document
 - Keep each index entry's local page link paired with its canonical source URL
 - Keep each source URL in the index tied to a checked-in mirrored page
+- Keep `docs/sources.tsv` as the reviewed one-to-one mapping between stable
+  local mirror slugs and canonical upstream source URLs
+- Use the opt-in live source audit to refresh verification dates without making
+  canonical offline validation depend on upstream availability
 - Keep duplicate local or source entries out of the local index
 - Keep the HTML redirect entry point tied to a checked-in mirrored document
 - Keep HTML redirect references aligned to one mirrored document
@@ -51,6 +55,8 @@ Contribution rules:
 - Keep copied documentation attributable to its source.
 - Do not mix generated refreshes with unrelated edits.
 - Preserve filenames and links unless the source structure changes.
+- Keep `.github/workflows/check.yml` aligned with the offline docs validation
+  baseline.
 
 ## Security And Responsible Use
 

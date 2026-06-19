@@ -1,4 +1,4 @@
-<!-- Source: https://creator.poe.com/docs/best-practices-image-generation-bots -->
+<!-- Source: https://creator.poe.com/docs/prompt-bots/best-practices-image-generation-bots -->
 
 getting started
 ---------------

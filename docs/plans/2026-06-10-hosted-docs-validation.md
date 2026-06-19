@@ -15,10 +15,11 @@ merged without exercising the canonical `make check` gate.
 - Added a GitHub Actions workflow that runs `make check` on a fixed Ubuntu
   runner without installing dependencies or contacting external services.
 - Limited the workflow token to read-only repository contents access.
-- Pinned the checkout action to a reviewed commit and added concurrency and
-  timeout limits.
-- Extended the offline validator to require the hosted workflow, pinned action,
-  read-only permission, canonical command, and this completed plan.
+- Pinned the checkout action to a reviewed commit, disabled credential
+  persistence, and added manual dispatch, concurrency, and timeout limits.
+- Extended the offline validator to require the hosted workflow, singular
+  pinned credential-free action, read-only permission, canonical command, and
+  both completed CI plans.
 
 ## Verification
 

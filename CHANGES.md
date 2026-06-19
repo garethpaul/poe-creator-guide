@@ -2,6 +2,11 @@
 
 ## 2026-06-12
 
+- Replaced 25 legacy derived source URLs with reviewed canonical sectioned Poe
+  URLs and recorded their live-verification date in `docs/sources.tsv`.
+- Added offline manifest coverage and consistency validation plus an opt-in
+  `make check-sources` live HTTP 200 audit; canonical GitHub Actions remains
+  dependency-free and network-free.
 - Repaired two broken mirrored guide links that used legacy `doc:` and
   parent-relative Markdown targets.
 - Added an offline guard requiring mirrored local guide links to use validated
@@ -9,15 +14,15 @@
 
 ## 2026-06-10
 
-- Added hosted offline documentation validation for pushes and pull requests,
-  with read-only permissions and a pinned checkout action.
-- Extended the docs checker to preserve the hosted workflow contract and its
-  completed maintenance plan.
+- Added GitHub Actions offline documentation validation for pushes, pull
+  requests, and manual dispatches, with read-only permissions and pinned,
+  credential-free checkout.
+- Extended the docs checker to preserve the exact hosted workflow contract and
+  both completed CI maintenance plans.
 - Added `index.html` redirect target consistency validation so refresh,
   canonical, and fallback links must point to the same mirrored document.
 - Added offline local heading-fragment validation and repaired stale section
   links after guide content moved to dedicated pages.
-
 ## 2026-06-09
 
 - Added reverse source-URL validation so every Poe source URL in `index.md`
