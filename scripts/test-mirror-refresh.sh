@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+ROOT_DIR=$(CDPATH=; cd -- "$(dirname -- "$0")/.." && pwd)
 WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/poe-mirror-refresh-test.XXXXXX")
 trap 'rm -rf "$WORK_DIR"' EXIT HUP INT TERM
 
@@ -9,6 +9,7 @@ FIXTURE_ROOT="$WORK_DIR/repository"
 mkdir -p "$FIXTURE_ROOT/docs" "$FIXTURE_ROOT/scripts"
 cp "$ROOT_DIR/scripts/record-mirror-refresh.sh" "$FIXTURE_ROOT/scripts/"
 cp "$ROOT_DIR/scripts/iso-date.sh" "$FIXTURE_ROOT/scripts/"
+cp "$ROOT_DIR/scripts/source-url.sh" "$FIXTURE_ROOT/scripts/"
 chmod +x "$FIXTURE_ROOT/scripts/record-mirror-refresh.sh"
 
 fail() {

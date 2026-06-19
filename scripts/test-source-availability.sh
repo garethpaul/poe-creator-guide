@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+ROOT_DIR=$(CDPATH=; cd -- "$(dirname -- "$0")/.." && pwd)
 WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/poe-source-audit-test.XXXXXX")
 trap 'rm -rf "$WORK_DIR"' EXIT HUP INT TERM
 
@@ -49,6 +49,7 @@ sha256_file() {
 mkdir -p "$FIXTURE_ROOT/docs" "$FIXTURE_ROOT/scripts" "$FAKE_BIN" "$AUDIT_TMP"
 cp "$ROOT_DIR/scripts/check-source-availability.sh" "$FIXTURE_ROOT/scripts/"
 cp "$ROOT_DIR/scripts/iso-date.sh" "$FIXTURE_ROOT/scripts/"
+cp "$ROOT_DIR/scripts/source-url.sh" "$FIXTURE_ROOT/scripts/"
 chmod +x "$FIXTURE_ROOT/scripts/check-source-availability.sh"
 printf '%s\n' '<!-- Source: test fixture -->' '# Test source' > "$FIXTURE_ROOT/docs/test-source.md"
 content_sha256=$(sha256_file "$FIXTURE_ROOT/docs/test-source.md")
@@ -154,6 +155,10 @@ assert_preflight_rejected "source manifest has an invalid slug: ../escape" \
 printf 'test-source\thttps://example.com/docs/test-source\t2026-06-13\t%s\n' "$content_sha256" > "$FIXTURE_ROOT/docs/sources.tsv"
 assert_preflight_rejected "source manifest has a non-canonical source URL" \
   "the live audit must reject non-canonical source URLs"
+
+printf 'test-source\thttps://creator.poe.com/docs/../admin\t2026-06-13\t%s\n' "$content_sha256" > "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "source manifest has a non-canonical source URL" \
+  "the live audit must reject dot-segment source URLs"
 
 printf 'missing-source\thttps://creator.poe.com/docs/missing-source\t2026-06-13\t%s\n' "$content_sha256" > "$FIXTURE_ROOT/docs/sources.tsv"
 assert_preflight_rejected "source manifest references missing mirror: docs/missing-source.md" \

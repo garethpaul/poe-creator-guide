@@ -64,15 +64,21 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   redirecting.
 - Run `make record-refresh SLUG=<slug> VERIFIED_AT=<YYYY-MM-DD>` after manually
   reviewing and updating one mirrored page.
-- `make test` includes network-free live source audit tests that inject a fake
-  curl client and exercise success, failure, redirect, fingerprint, malformed
-  manifest, unsafe slug, noncanonical URL, and preflight-ordering paths.
+- `make test` includes docs-index fixture tests plus network-free live source audit tests
+  that inject a fake curl client and exercise success, failure, redirect,
+  fingerprint, malformed manifest, unsafe slug, noncanonical URL,
+  dot-segment URL, and preflight-ordering paths.
 - Pinned, credential-free, read-only GitHub Actions runs the same
   dependency-free `make check` gate for pushes to `main`, pull requests, and
   manual dispatches.
 - Run `make build` for the static documentation build gate; it uses the same
   offline docs validator as `make lint`.
 - The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, each mirrored page matches its reviewed SHA-256 fingerprint and source attribution, each page's source URL remains visible in `index.md`, each index entry keeps the local page link paired with its canonical source link, local `/docs/<slug>` links point to checked-in pages, and `docs/plans/` contains a completed maintenance plan.
+- The same gate rejects unexpected hosted files or symbolic links under
+  `docs/` and rejects raw active Markdown HTML outside fenced code blocks.
+- The same gate validates canonical Poe source URLs with a shared helper so
+  dot segments, encoded paths, query strings, fragments, and non-docs hosts do
+  not enter the offline manifest, live audit, or refresh recorder.
 - The source attribution guard requires exactly one source comment as the first
   line of each mirrored page.
 - The same gate requires unique visible `llms.txt` titles so similarly named
@@ -161,6 +167,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   mirrored guide links and the legacy-link guard.
 - See `docs/plans/2026-06-12-canonical-source-manifest.md` for canonical source
   mapping and the opt-in live availability audit.
+- See `docs/plans/2026-06-19-hosted-content-boundary.md` for the hosted-file,
+  active-content, and canonical source URL path boundary.
 
 ## Contributing
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env sh
 set -eu
 
-ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+ROOT_DIR=$(CDPATH=; cd -- "$(dirname -- "$0")/.." && pwd)
 MANIFEST="$ROOT_DIR/docs/sources.tsv"
 . "$ROOT_DIR/scripts/iso-date.sh"
+. "$ROOT_DIR/scripts/source-url.sh"
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -49,10 +50,9 @@ while IFS="$tab" read -r slug source_url verified_at content_sha256; do
   case "$slug" in
     *[!A-Za-z0-9._-]*) fail "source manifest has an invalid slug: $slug" ;;
   esac
-  case "$source_url" in
-    https://creator.poe.com/docs/*) ;;
-    *) fail "source manifest has a non-canonical source URL for $slug: $source_url" ;;
-  esac
+  if ! is_canonical_poe_docs_url "$source_url"; then
+    fail "source manifest has a non-canonical source URL for $slug: $source_url"
+  fi
   mirror="$ROOT_DIR/docs/$slug.md"
   [ ! -L "$mirror" ] || fail "source manifest references symbolic link mirror: docs/$slug.md"
   [ -f "$mirror" ] || fail "source manifest references missing mirror: docs/$slug.md"
