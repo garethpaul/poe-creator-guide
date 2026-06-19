@@ -3,6 +3,7 @@ set -eu
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 MANIFEST="$ROOT_DIR/docs/sources.tsv"
+. "$ROOT_DIR/scripts/iso-date.sh"
 
 if ! command -v curl >/dev/null 2>&1; then
   printf '%s\n' "curl is required for the opt-in live source audit." >&2
@@ -36,6 +37,10 @@ while IFS="$tab" read -r slug source_url verified_at content_sha256; do
     printf '%s\n' "$slug mirror fingerprint mismatch: expected $content_sha256, got $actual_sha256" >&2
     exit 1
   fi
+  if ! is_valid_iso_date "$verified_at"; then
+    printf '%s\n' "$slug has an invalid verification date: $verified_at" >&2
+    exit 1
+  fi
   result=$(curl \
     --location \
     --silent \
@@ -54,10 +59,6 @@ while IFS="$tab" read -r slug source_url verified_at content_sha256; do
   fi
   if [ "$final_url" != "$source_url" ]; then
     printf '%s\n' "$slug source redirected: $source_url -> $final_url" >&2
-    exit 1
-  fi
-  if ! printf '%s\n' "$verified_at" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
-    printf '%s\n' "$slug has an invalid verification date: $verified_at" >&2
     exit 1
   fi
   checked=$((checked + 1))

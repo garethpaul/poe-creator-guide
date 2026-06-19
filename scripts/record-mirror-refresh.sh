@@ -3,6 +3,7 @@ set -eu
 
 ROOT_DIR=${POE_CREATOR_GUIDE_ROOT:-$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)}
 MANIFEST="$ROOT_DIR/docs/sources.tsv"
+. "$ROOT_DIR/scripts/iso-date.sh"
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -28,7 +29,7 @@ verified_at=$2
 case "$slug" in
   ''|*[!A-Za-z0-9._-]*) fail "invalid mirror slug: $slug" ;;
 esac
-if ! printf '%s\n' "$verified_at" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+if ! is_valid_iso_date "$verified_at"; then
   fail "invalid verification date: $verified_at"
 fi
 

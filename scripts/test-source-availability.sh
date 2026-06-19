@@ -47,6 +47,7 @@ sha256_file() {
 
 mkdir -p "$FIXTURE_ROOT/docs" "$FIXTURE_ROOT/scripts" "$FAKE_BIN"
 cp "$ROOT_DIR/scripts/check-source-availability.sh" "$FIXTURE_ROOT/scripts/"
+cp "$ROOT_DIR/scripts/iso-date.sh" "$FIXTURE_ROOT/scripts/"
 chmod +x "$FIXTURE_ROOT/scripts/check-source-availability.sh"
 printf '%s\n' '<!-- Source: test fixture -->' '# Test source' > "$FIXTURE_ROOT/docs/test-source.md"
 content_sha256=$(sha256_file "$FIXTURE_ROOT/docs/test-source.md")
@@ -110,6 +111,21 @@ if output=$(run_audit transport_error); then
   fail "the live audit must reject curl transport failures"
 fi
 assert_contains "$output" "fake curl transport failure"
+
+: > "$FAKE_LOG"
+sed 's/2026-06-13/2026-02-30/' "$FIXTURE_ROOT/docs/sources.tsv" > "$FIXTURE_ROOT/docs/sources.tsv.tmp"
+mv "$FIXTURE_ROOT/docs/sources.tsv.tmp" "$FIXTURE_ROOT/docs/sources.tsv"
+if output=$(run_audit success); then
+  fail "the live audit must reject impossible calendar dates"
+fi
+assert_contains "$output" "test-source has an invalid verification date: 2026-02-30"
+if [ -s "$FAKE_LOG" ]; then
+  fail "the live audit must validate dates before invoking curl"
+fi
+sed 's/2026-02-30/2024-02-29/' "$FIXTURE_ROOT/docs/sources.tsv" > "$FIXTURE_ROOT/docs/sources.tsv.tmp"
+mv "$FIXTURE_ROOT/docs/sources.tsv.tmp" "$FIXTURE_ROOT/docs/sources.tsv"
+output=$(run_audit success)
+assert_contains "$output" "Live source audit passed for 1 canonical Poe pages."
 
 : > "$FAKE_LOG"
 printf '%s\n' 'changed mirror' >> "$FIXTURE_ROOT/docs/test-source.md"
