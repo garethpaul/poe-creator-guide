@@ -27,6 +27,7 @@ source_availability_test_plan="docs/plans/2026-06-13-live-source-audit-tests.md"
 mirror_refresh_plan="docs/plans/2026-06-13-mirror-refresh-process.md"
 location_independent_make_plan="docs/plans/2026-06-14-location-independent-make.md"
 calendar_date_plan="docs/plans/2026-06-15-calendar-date-validation.md"
+live_audit_boundary_plan="docs/plans/2026-06-17-live-audit-manifest-boundary.md"
 makefile="Makefile"
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
@@ -161,6 +162,31 @@ if [ -z "$date_line" ] || [ -z "$curl_line" ] || [ "$date_line" -ge "$curl_line"
   fail "$source_availability_script must validate dates before invoking curl"
 fi
 
+preflight_read_count=$(sed -n '1,/result=$(curl \\/p' "$source_availability_script" |
+  grep -Fc 'while IFS="$tab" read -r slug source_url verified_at content_sha256; do' || true)
+if [ "$preflight_read_count" -ne 2 ]; then
+  fail "$source_availability_script must complete a full manifest preflight before invoking curl"
+fi
+snapshot_read_count=$(grep -Fc 'done < "$AUDIT_MANIFEST"' "$source_availability_script" || true)
+if [ "$snapshot_read_count" -ne 2 ]; then
+  fail "$source_availability_script must use the validated manifest snapshot for both phases"
+fi
+
+for preflight_contract in \
+  'AUDIT_MANIFEST=$(mktemp' \
+  'cp "$MANIFEST" "$AUDIT_MANIFEST"' \
+  'source manifest must contain at least one row' \
+  'exactly four non-empty tab-separated fields' \
+  'source manifest contains duplicate local slugs' \
+  'source manifest contains duplicate canonical URLs' \
+  'source manifest has an invalid slug' \
+  'source manifest has a non-canonical source URL' \
+  'source manifest references missing mirror'; do
+  if ! grep -Fq "$preflight_contract" "$source_availability_script"; then
+    fail "$source_availability_script must preserve manifest preflight validation: $preflight_contract"
+  fi
+done
+
 for fixture_contract in \
   'the live audit must reject impossible calendar dates' \
   'the live audit must validate dates before invoking curl' \
@@ -224,9 +250,35 @@ else
     'run_audit redirect' \
     'run_audit transport_error' \
     'mirror fingerprint mismatch' \
-    'verify the mirror fingerprint before invoking curl'; do
+    'verify the mirror fingerprint before invoking curl' \
+    'reject an empty manifest' \
+    'reject malformed manifest rows' \
+    'reject extra manifest fields' \
+    'reject empty manifest fields' \
+    'reject traversal-shaped slugs' \
+    'reject non-canonical source URLs' \
+    'reject missing mirrors' \
+    'reject malformed fingerprints' \
+    'reject duplicate slugs' \
+    'reject duplicate canonical URLs' \
+    'validate every manifest row before invoking curl' \
+    'temporary manifest snapshots must be removed'; do
     if ! grep -Fq -- "$test_contract" "$source_availability_tests"; then
       fail "$source_availability_tests must preserve the offline live-audit contract: $test_contract"
+    fi
+  done
+fi
+
+if [ ! -f "$live_audit_boundary_plan" ]; then
+  fail "$live_audit_boundary_plan is missing"
+else
+  for evidence in \
+    'Status: Completed' \
+    '## Verification' \
+    'hostile mutations' \
+    'make check'; do
+    if ! grep -Fqi "$evidence" "$live_audit_boundary_plan"; then
+      fail "$live_audit_boundary_plan must preserve completed evidence: $evidence"
     fi
   done
 fi

@@ -58,12 +58,14 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 
 - Run `make check` or `make verify` before committing documentation index changes.
 - Run `make check-sources` when intentionally auditing current upstream source
-  availability; it follows redirects and requires each canonical manifest URL
-  to return HTTP 200 without redirecting.
+  availability; it validates the complete manifest and every local fingerprint
+  before contacting Poe, then follows redirects and requires each canonical
+  manifest URL to return HTTP 200 without redirecting.
 - Run `make record-refresh SLUG=<slug> VERIFIED_AT=<YYYY-MM-DD>` after manually
   reviewing and updating one mirrored page.
 - `make test` includes network-free live source audit tests that inject a fake
-  curl client and exercise success, failure, redirect, and fingerprint paths.
+  curl client and exercise success, failure, redirect, fingerprint, malformed
+  manifest, unsafe slug, noncanonical URL, and preflight-ordering paths.
 - Pinned, credential-free, read-only GitHub Actions runs the same
   dependency-free `make check` gate for pushes to `main`, pull requests, and
   manual dispatches.

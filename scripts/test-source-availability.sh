@@ -8,6 +8,7 @@ trap 'rm -rf "$WORK_DIR"' EXIT HUP INT TERM
 FIXTURE_ROOT="$WORK_DIR/repository"
 FAKE_BIN="$WORK_DIR/bin"
 FAKE_LOG="$WORK_DIR/curl-args"
+AUDIT_TMP="$WORK_DIR/tmp"
 SOURCE_URL="https://creator.poe.com/docs/test-source"
 
 fail() {
@@ -45,7 +46,7 @@ sha256_file() {
   fi
 }
 
-mkdir -p "$FIXTURE_ROOT/docs" "$FIXTURE_ROOT/scripts" "$FAKE_BIN"
+mkdir -p "$FIXTURE_ROOT/docs" "$FIXTURE_ROOT/scripts" "$FAKE_BIN" "$AUDIT_TMP"
 cp "$ROOT_DIR/scripts/check-source-availability.sh" "$FIXTURE_ROOT/scripts/"
 cp "$ROOT_DIR/scripts/iso-date.sh" "$FIXTURE_ROOT/scripts/"
 chmod +x "$FIXTURE_ROOT/scripts/check-source-availability.sh"
@@ -80,8 +81,26 @@ EOF
 chmod +x "$FAKE_BIN/curl"
 
 run_audit() {
-  FAKE_CURL_MODE=$1 FAKE_CURL_LOG="$FAKE_LOG" PATH="$FAKE_BIN:$PATH" \
+  FAKE_CURL_MODE=$1 FAKE_CURL_LOG="$FAKE_LOG" TMPDIR="$AUDIT_TMP" PATH="$FAKE_BIN:$PATH" \
     "$FIXTURE_ROOT/scripts/check-source-availability.sh" 2>&1
+}
+
+write_valid_manifest() {
+  verified_at=${1:-2026-06-13}
+  printf 'test-source\t%s\t%s\t%s\n' "$SOURCE_URL" "$verified_at" "$content_sha256" > "$FIXTURE_ROOT/docs/sources.tsv"
+}
+
+assert_preflight_rejected() {
+  expected=$1
+  description=$2
+  : > "$FAKE_LOG"
+  if output=$(run_audit success); then
+    fail "$description"
+  fi
+  assert_contains "$output" "$expected"
+  if [ -s "$FAKE_LOG" ]; then
+    fail "$description before invoking curl"
+  fi
 }
 
 output=$(run_audit success)
@@ -112,18 +131,58 @@ if output=$(run_audit transport_error); then
 fi
 assert_contains "$output" "fake curl transport failure"
 
-: > "$FAKE_LOG"
-sed 's/2026-06-13/2026-02-30/' "$FIXTURE_ROOT/docs/sources.tsv" > "$FIXTURE_ROOT/docs/sources.tsv.tmp"
-mv "$FIXTURE_ROOT/docs/sources.tsv.tmp" "$FIXTURE_ROOT/docs/sources.tsv"
-if output=$(run_audit success); then
-  fail "the live audit must reject impossible calendar dates"
-fi
-assert_contains "$output" "test-source has an invalid verification date: 2026-02-30"
-if [ -s "$FAKE_LOG" ]; then
-  fail "the live audit must validate dates before invoking curl"
-fi
-sed 's/2026-02-30/2024-02-29/' "$FIXTURE_ROOT/docs/sources.tsv" > "$FIXTURE_ROOT/docs/sources.tsv.tmp"
-mv "$FIXTURE_ROOT/docs/sources.tsv.tmp" "$FIXTURE_ROOT/docs/sources.tsv"
+: > "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "source manifest must contain at least one row" \
+  "the live audit must reject an empty manifest"
+
+printf 'test-source\t%s\t2026-06-13\n' "$SOURCE_URL" > "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "exactly four non-empty tab-separated fields" \
+  "the live audit must reject malformed manifest rows"
+
+printf 'test-source\t%s\t2026-06-13\t%s\textra\n' "$SOURCE_URL" "$content_sha256" > "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "exactly four non-empty tab-separated fields" \
+  "the live audit must reject extra manifest fields"
+
+printf 'test-source\t\t2026-06-13\t%s\n' "$content_sha256" > "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "exactly four non-empty tab-separated fields" \
+  "the live audit must reject empty manifest fields"
+
+printf '../escape\t%s\t2026-06-13\t%s\n' "$SOURCE_URL" "$content_sha256" > "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "source manifest has an invalid slug: ../escape" \
+  "the live audit must reject traversal-shaped slugs"
+
+printf 'test-source\thttps://example.com/docs/test-source\t2026-06-13\t%s\n' "$content_sha256" > "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "source manifest has a non-canonical source URL" \
+  "the live audit must reject non-canonical source URLs"
+
+printf 'missing-source\thttps://creator.poe.com/docs/missing-source\t2026-06-13\t%s\n' "$content_sha256" > "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "source manifest references missing mirror: docs/missing-source.md" \
+  "the live audit must reject missing mirrors"
+
+printf 'test-source\t%s\t2026-06-13\tinvalid\n' "$SOURCE_URL" > "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "test-source has an invalid SHA-256 fingerprint: invalid" \
+  "the live audit must reject malformed fingerprints"
+
+write_valid_manifest
+printf 'test-source\thttps://creator.poe.com/docs/other-source\t2026-06-13\t%s\n' "$content_sha256" >> "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "source manifest contains duplicate local slugs" \
+  "the live audit must reject duplicate slugs"
+
+write_valid_manifest
+printf 'other-source\t%s\t2026-06-13\t%s\n' "$SOURCE_URL" "$content_sha256" >> "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "source manifest contains duplicate canonical URLs" \
+  "the live audit must reject duplicate canonical URLs"
+
+write_valid_manifest
+printf '../later-escape\thttps://creator.poe.com/docs/later-escape\t2026-06-13\t%s\n' "$content_sha256" >> "$FIXTURE_ROOT/docs/sources.tsv"
+assert_preflight_rejected "source manifest has an invalid slug: ../later-escape" \
+  "the live audit must validate every manifest row before invoking curl"
+
+write_valid_manifest 2026-02-30
+assert_preflight_rejected "test-source has an invalid verification date: 2026-02-30" \
+  "the live audit must reject impossible calendar dates; the live audit must validate dates before invoking curl"
+
+write_valid_manifest 2024-02-29
 output=$(run_audit success)
 assert_contains "$output" "Live source audit passed for 1 canonical Poe pages."
 
@@ -135,6 +194,9 @@ fi
 assert_contains "$output" "test-source mirror fingerprint mismatch"
 if [ -s "$FAKE_LOG" ]; then
   fail "the live audit must verify the mirror fingerprint before invoking curl"
+fi
+if find "$AUDIT_TMP" -type f | grep -q .; then
+  fail "temporary manifest snapshots must be removed"
 fi
 
 printf '%s\n' "Live source audit contract tests passed."
