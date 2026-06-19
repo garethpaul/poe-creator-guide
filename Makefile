@@ -9,6 +9,7 @@ lint:
 	scripts/check-docs-index.sh
 
 test: lint
+	scripts/test-source-availability.sh
 
 build: lint
 

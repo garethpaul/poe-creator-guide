@@ -46,6 +46,8 @@ Keep each local index entry paired with its canonical Poe source URL so source
 context cannot be shuffled across mirrored pages.
 Keep canonical URLs and live-verification dates in `docs/sources.tsv`; use the
 opt-in live audit separately from credential-free offline GitHub Actions.
+Keep network-free live source audit tests in the canonical offline gate so curl
+failure handling is verified without contacting upstream pages.
 Keep mirrored content fingerprints in the same manifest so an unreviewed local
 page edit cannot retain valid source metadata while changing the reviewed text.
 Reject source URLs in the local index that no longer map to checked-in mirrored

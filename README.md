@@ -60,6 +60,8 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Run `make check-sources` when intentionally auditing current upstream source
   availability; it follows redirects and requires each canonical manifest URL
   to return HTTP 200 without redirecting.
+- `make test` includes network-free live source audit tests that inject a fake
+  curl client and exercise success, failure, redirect, and fingerprint paths.
 - Pinned, credential-free, read-only GitHub Actions runs the same
   dependency-free `make check` gate for pushes to `main`, pull requests, and
   manual dispatches.
