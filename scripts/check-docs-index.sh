@@ -23,6 +23,7 @@ source_manifest_plan="docs/plans/2026-06-12-canonical-source-manifest.md"
 content_fingerprint_plan="docs/plans/2026-06-13-mirrored-content-fingerprints.md"
 source_availability_test_plan="docs/plans/2026-06-13-live-source-audit-tests.md"
 mirror_refresh_plan="docs/plans/2026-06-13-mirror-refresh-process.md"
+location_independent_make_plan="docs/plans/2026-06-14-location-independent-make.md"
 makefile="Makefile"
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
@@ -268,6 +269,35 @@ for contract in \
     fail "$makefile must preserve the refresh target contract: $contract"
   fi
 done
+
+for contract in \
+  'override REPO_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))' \
+  'cd "$(REPO_ROOT)" && scripts/check-source-availability.sh' \
+  'cd "$(REPO_ROOT)" && scripts/record-mirror-refresh.sh "$(SLUG)" "$(VERIFIED_AT)"' \
+  'cd "$(REPO_ROOT)" && scripts/check-docs-index.sh' \
+  'cd "$(REPO_ROOT)" && scripts/test-source-availability.sh' \
+  'cd "$(REPO_ROOT)" && scripts/test-mirror-refresh.sh'; do
+  if ! grep -Fq "$contract" "$makefile"; then
+    fail "$makefile must remain caller-directory independent: $contract"
+  fi
+done
+
+if [ ! -f "$location_independent_make_plan" ]; then
+  fail "$location_independent_make_plan is missing"
+else
+  for evidence in \
+    'status: completed' \
+    'absolute Makefile path from /tmp' \
+    'REPO_ROOT=/tmp' \
+    'deterministic fake curl' \
+    'six isolated hostile mutations' \
+    'git diff --check' \
+    'credential-pattern'; do
+    if ! grep -Fq "$evidence" "$location_independent_make_plan"; then
+      fail "$location_independent_make_plan must preserve completed evidence: $evidence"
+    fi
+  done
+fi
 
 for document in README.md SECURITY.md VISION.md CHANGES.md; do
   if ! grep -Fiq 'mirror refresh' "$document"; then
