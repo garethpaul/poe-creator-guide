@@ -1,25 +1,25 @@
-accessing-other-bots-on-poe	https://creator.poe.com/docs/server-bots/accessing-other-bots-on-poe	2026-06-12
-best-practice-text-generation	https://creator.poe.com/docs/prompt-bots/best-practice-text-generation	2026-06-12
-best-practices-for-video-generation-prompts	https://creator.poe.com/docs/prompt-bots/best-practices-for-video-generation-prompts	2026-06-12
-best-practices-image-generation-bots	https://creator.poe.com/docs/prompt-bots/best-practices-image-generation-bots	2026-06-12
-canvas-app-quick-start	https://creator.poe.com/docs/canvas-apps/canvas-app-quick-start	2026-06-12
-canvas-limitations	https://creator.poe.com/docs/canvas-apps/canvas-limitations	2026-06-12
-creator-monetization	https://creator.poe.com/docs/resources/creator-monetization	2026-06-12
-enabling-file-upload-for-your-bot	https://creator.poe.com/docs/server-bots/enabling-file-upload-for-your-bot	2026-06-12
-examples	https://creator.poe.com/docs/server-bots/examples	2026-06-12
-fastapi_poe-python-reference	https://creator.poe.com/docs/server-bots/fastapi_poe-python-reference	2026-06-12
-frequently-asked-questions	https://creator.poe.com/docs/resources/frequently-asked-questions	2026-06-12
-fundraising	https://creator.poe.com/docs/resources/fundraising	2026-06-12
-how-to-contact-us	https://creator.poe.com/docs/resources/how-to-contact-us	2026-06-12
-how-to-create-a-prompt-bot	https://creator.poe.com/docs/prompt-bots/how-to-create-a-prompt-bot	2026-06-12
-how-to-get-distribution	https://creator.poe.com/docs/resources/how-to-get-distribution	2026-06-12
-how-we-cover-your-costs	https://creator.poe.com/docs/resources/how-we-cover-your-costs	2026-06-12
-poe-embed-api	https://creator.poe.com/docs/canvas-apps/poe-embed-api	2026-06-12
-poe-protocol-specification	https://creator.poe.com/docs/server-bots/poe-protocol-specification	2026-06-12
-quick-start	https://creator.poe.com/docs/server-bots/quick-start	2026-06-12
-recommended-bot-settings	https://creator.poe.com/docs/server-bots/recommended-bot-settings	2026-06-12
-rendering-an-image-in-the-response	https://creator.poe.com/docs/server-bots/rendering-an-image-in-the-response	2026-06-12
-server-bots-functional-guides	https://creator.poe.com/docs/server-bots/server-bots-functional-guides	2026-06-12
-setting-an-introduction-message	https://creator.poe.com/docs/server-bots/setting-an-introduction-message	2026-06-12
-updating-bot-settings	https://creator.poe.com/docs/server-bots/updating-bot-settings	2026-06-12
-welcome-to-poe-for-creators	https://creator.poe.com/docs/intro	2026-06-12
+accessing-other-bots-on-poe	https://creator.poe.com/docs/server-bots/accessing-other-bots-on-poe	2026-06-12	311b1be89b4f23e453281fd5b8445cdd81346aceb8caa1ae89f2cc91e9c56d97
+best-practice-text-generation	https://creator.poe.com/docs/prompt-bots/best-practice-text-generation	2026-06-12	17f3bdb6d21bbed18de8257813ad1cc4ea141abff6f26cdae5039b4a65db3731
+best-practices-for-video-generation-prompts	https://creator.poe.com/docs/prompt-bots/best-practices-for-video-generation-prompts	2026-06-12	34cb97cfa7b63ff926d05d5a7f8144d2317e324ca460315f5f78bc90cda0cba2
+best-practices-image-generation-bots	https://creator.poe.com/docs/prompt-bots/best-practices-image-generation-bots	2026-06-12	c5f8be7af49f8fbaca28a1562ef8b8e65922828fb0634251f0d5056bc67b8805
+canvas-app-quick-start	https://creator.poe.com/docs/canvas-apps/canvas-app-quick-start	2026-06-12	0d4481f6438e8cadfaf66c4951dadc720cd46a3ac79d58b382711f51027858e8
+canvas-limitations	https://creator.poe.com/docs/canvas-apps/canvas-limitations	2026-06-12	c7aa96c16269e0ffa2c8161f94ddca67822ecee322a203fbbf05b20cc29274b3
+creator-monetization	https://creator.poe.com/docs/resources/creator-monetization	2026-06-12	6cc98bddd6b7eddd04b1d3e4224bb257c412235b344b939e6e1b1dfac9c93509
+enabling-file-upload-for-your-bot	https://creator.poe.com/docs/server-bots/enabling-file-upload-for-your-bot	2026-06-12	6e97874bdc28fe84c02a6de4be1d2b0409629f70e961f5ea172d71aa3cbc58c7
+examples	https://creator.poe.com/docs/server-bots/examples	2026-06-12	52f7ffc5a7a28d0c4b6b2766e322583e9fdc6bdb8d6a651b71f3e636eb3d5f55
+fastapi_poe-python-reference	https://creator.poe.com/docs/server-bots/fastapi_poe-python-reference	2026-06-12	9901165faceed1e7842f751f77744b1639a3f34160fc45f92f511a2a37e6aa9f
+frequently-asked-questions	https://creator.poe.com/docs/resources/frequently-asked-questions	2026-06-12	c30ade51fc1182fbd9de0dbbea8085b96653daf6232f2fa3874bc893663b22b4
+fundraising	https://creator.poe.com/docs/resources/fundraising	2026-06-12	d5380bf708d29e4460b430892c93f62687a223953189eb77797aa97705f4b645
+how-to-contact-us	https://creator.poe.com/docs/resources/how-to-contact-us	2026-06-12	36326e83688ae4d7f13974afd8b5c53fdf44c84525b1dea6a1061648c26e0d23
+how-to-create-a-prompt-bot	https://creator.poe.com/docs/prompt-bots/how-to-create-a-prompt-bot	2026-06-12	b841137d7ece3b73fecb3bb5f4e131c5ef22ea00620d3651a082381e98b094da
+how-to-get-distribution	https://creator.poe.com/docs/resources/how-to-get-distribution	2026-06-12	779e0f0104c644f7ae4825ca57aa9d5727812a7bf4e357d1b34b023ac2190868
+how-we-cover-your-costs	https://creator.poe.com/docs/resources/how-we-cover-your-costs	2026-06-12	95e9d8869d09fb1704907600acd2f14359a721db38baef2db1ae074bd3b2a789
+poe-embed-api	https://creator.poe.com/docs/canvas-apps/poe-embed-api	2026-06-12	847000408c20d33147aa949290fc48af8fc058854ae2fb05fc6949445182fd9c
+poe-protocol-specification	https://creator.poe.com/docs/server-bots/poe-protocol-specification	2026-06-12	5b80bd153f4f415bdb733417e541f46344f000dabf96884ec7e584aef2b887f7
+quick-start	https://creator.poe.com/docs/server-bots/quick-start	2026-06-12	f4cbdf8726dd2df54cc1b0b88ee4811a8dc2a01df1100bedcab081555f0a99c8
+recommended-bot-settings	https://creator.poe.com/docs/server-bots/recommended-bot-settings	2026-06-12	74b461df8e4d3c339ef0cbee10ef0405610f3dc127f7d4d477c6791bec23b64d
+rendering-an-image-in-the-response	https://creator.poe.com/docs/server-bots/rendering-an-image-in-the-response	2026-06-12	a6eb699d9e379e7e66aba1246b40fece3db64e1ea718f1bd8f06b93b0c39226c
+server-bots-functional-guides	https://creator.poe.com/docs/server-bots/server-bots-functional-guides	2026-06-12	2204bb8b3194d5d1437347d53d7acf57da84820d5998c5ef6f28947470153633
+setting-an-introduction-message	https://creator.poe.com/docs/server-bots/setting-an-introduction-message	2026-06-12	8a4fa65e2a9ff79456c6c414529dda1423b0bf09d8bf66bb12e533cca7a5ec36
+updating-bot-settings	https://creator.poe.com/docs/server-bots/updating-bot-settings	2026-06-12	4a87a5da660da2b9d573c890ba8c5945432c377fe627fac889656200f7ed8583
+welcome-to-poe-for-creators	https://creator.poe.com/docs/intro	2026-06-12	e5aa2233b8e16ca8c6c19fd191b6b8ecc17abfbe04f42f8d4066cfff43a2a4df

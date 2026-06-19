@@ -52,7 +52,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Open `index.md` for the local Markdown index, or `index.html` for the GitHub Pages redirect.
 - Read `llms.txt` for source URLs and short page summaries.
 - Read `docs/sources.tsv` for the reviewed mapping from stable local slugs to
-  canonical upstream Poe URLs and the last live-verification date.
+  canonical upstream Poe URLs, the last live-verification date, and mirrored content fingerprints. Refresh a row's SHA-256 whenever its local page changes.
 
 ## Testing and Verification
 
@@ -65,7 +65,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
   manual dispatches.
 - Run `make build` for the static documentation build gate; it uses the same
   offline docs validator as `make lint`.
-- The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, each mirrored page has a source attribution comment, each page's source URL remains visible in `index.md`, each index entry keeps the local page link paired with its canonical source link, local `/docs/<slug>` links point to checked-in pages, and `docs/plans/` contains a completed maintenance plan.
+- The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, each mirrored page matches its reviewed SHA-256 fingerprint and source attribution, each page's source URL remains visible in `index.md`, each index entry keeps the local page link paired with its canonical source link, local `/docs/<slug>` links point to checked-in pages, and `docs/plans/` contains a completed maintenance plan.
 - The source attribution guard requires exactly one source comment as the first
   line of each mirrored page.
 - The same gate requires unique visible `llms.txt` titles so similarly named

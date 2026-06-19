@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-13
+
+- Added mirrored content fingerprints to every canonical source row and made
+  offline and opt-in live validation reject local snapshot drift.
+
 ## 2026-06-12
 
 - Replaced 25 legacy derived source URLs with reviewed canonical sectioned Poe

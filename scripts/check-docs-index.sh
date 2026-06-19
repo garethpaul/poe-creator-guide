@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 set -eu
 
+ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+cd "$ROOT_DIR"
+
 missing=0
 count=0
 link_count=0
@@ -10,9 +13,11 @@ plan_count=0
 source_attribution_count=0
 index_source_pair_count=0
 manifest_count=0
+fingerprint_count=0
 manifest="docs/sources.tsv"
 source_availability_script="scripts/check-source-availability.sh"
 source_manifest_plan="docs/plans/2026-06-12-canonical-source-manifest.md"
+content_fingerprint_plan="docs/plans/2026-06-13-mirrored-content-fingerprints.md"
 makefile="Makefile"
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
@@ -28,6 +33,23 @@ fail() {
   printf '%s\n' "$1" >&2
   missing=1
 }
+
+sha256_file() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{ print $1 }'
+  elif command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$1" | awk '{ print $1 }'
+  else
+    return 1
+  fi
+}
+
+hash_tool_available=1
+if ! command -v sha256sum >/dev/null 2>&1 &&
+   ! command -v shasum >/dev/null 2>&1; then
+  fail "sha256sum or shasum is required to verify mirrored content fingerprints"
+  hash_tool_available=0
+fi
 
 heading_anchors() {
   awk '
@@ -47,9 +69,9 @@ heading_anchors() {
 if [ ! -f "$manifest" ]; then
   fail "$manifest is missing"
 else
-  malformed_manifest_rows=$(awk -F '\t' 'NF != 3 || $1 == "" || $2 == "" || $3 == "" { print NR }' "$manifest")
+  malformed_manifest_rows=$(awk -F '\t' 'NF != 4 || $1 == "" || $2 == "" || $3 == "" || $4 == "" { print NR }' "$manifest")
   if [ -n "$malformed_manifest_rows" ]; then
-    fail "$manifest must contain exactly three non-empty tab-separated fields per row"
+    fail "$manifest must contain exactly four non-empty tab-separated fields per row"
   fi
 
   duplicate_manifest_slugs=$(cut -f1 "$manifest" | sort | uniq -d || true)
@@ -62,7 +84,7 @@ else
   fi
 
   tab=$(printf '\t')
-  while IFS="$tab" read -r slug source_url verified_at; do
+  while IFS="$tab" read -r slug source_url verified_at content_sha256; do
     [ -n "$slug" ] || continue
     manifest_count=$((manifest_count + 1))
     case "$slug" in
@@ -75,8 +97,21 @@ else
     if ! printf '%s\n' "$verified_at" | grep -Eq '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
       fail "$manifest has an invalid verification date for $slug: $verified_at"
     fi
+    if ! printf '%s\n' "$content_sha256" | grep -Eq '^[0-9a-f]{64}$'; then
+      fail "$manifest has an invalid SHA-256 fingerprint for $slug: $content_sha256"
+    fi
     if [ ! -f "docs/$slug.md" ]; then
       fail "$manifest references missing mirror: docs/$slug.md"
+      continue
+    fi
+    if [ "$hash_tool_available" -eq 0 ]; then
+      continue
+    fi
+    actual_sha256=$(sha256_file "docs/$slug.md")
+    if [ "$actual_sha256" != "$content_sha256" ]; then
+      fail "$manifest fingerprint mismatch for docs/$slug.md: expected $content_sha256, got $actual_sha256"
+    else
+      fingerprint_count=$((fingerprint_count + 1))
     fi
   done < "$manifest"
 fi
@@ -89,6 +124,8 @@ for live_contract in \
   '--location' \
   "status" \
   'final_url' \
+  'read -r slug source_url verified_at content_sha256' \
+  'sha256_file' \
   'Live source audit passed'; do
   if ! grep -Fq -- "$live_contract" "$source_availability_script"; then
     fail "$source_availability_script must preserve the live source contract: $live_contract"
@@ -106,8 +143,32 @@ for source_documentation in README.md VISION.md SECURITY.md CHANGES.md; do
   fi
 done
 
+for fingerprint_documentation in README.md VISION.md SECURITY.md CHANGES.md; do
+  if ! grep -Fq 'mirrored content fingerprints' "$fingerprint_documentation"; then
+    fail "$fingerprint_documentation must document mirrored content fingerprints"
+  fi
+done
+
 if [ ! -f "$source_manifest_plan" ]; then
   fail "$source_manifest_plan is missing"
+fi
+
+if [ ! -f "$content_fingerprint_plan" ]; then
+  fail "$content_fingerprint_plan is missing"
+else
+  for evidence in \
+    'status: completed' \
+    'sh -n' \
+    'dash -n' \
+    'make check' \
+    'hostile mutations rejected' \
+    'mirrored page paths had no diff' \
+    'git diff --check' \
+    'secret, captured-prompt, generated-artifact, URL/date, and dependency-drift scan'; do
+    if ! grep -Fq "$evidence" "$content_fingerprint_plan"; then
+      fail "$content_fingerprint_plan must preserve completed evidence: $evidence"
+    fi
+  done
 fi
 
 for path in docs/*.md; do
@@ -397,4 +458,4 @@ if [ "$missing" -ne 0 ]; then
   exit 1
 fi
 
-printf 'Docs index check passed for %s mirrored pages, %s canonical source rows, %s source attributions, %s paired index source links, %s unique llms source URLs, %s index source URLs, %s local doc links, %s heading fragments, %s HTML redirect links, and %s docs plans.\n' "$count" "$manifest_count" "$source_attribution_count" "$index_source_pair_count" "$(printf '%s\n' "$urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$(printf '%s\n' "$index_source_urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$link_count" "$fragment_count" "$redirect_count" "$plan_count"
+printf 'Docs index check passed for %s mirrored pages, %s canonical source rows, %s verified content fingerprints, %s source attributions, %s paired index source links, %s unique llms source URLs, %s index source URLs, %s local doc links, %s heading fragments, %s HTML redirect links, and %s docs plans.\n' "$count" "$manifest_count" "$fingerprint_count" "$source_attribution_count" "$index_source_pair_count" "$(printf '%s\n' "$urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$(printf '%s\n' "$index_source_urls" | sed '/^$/d' | wc -l | tr -d ' ')" "$link_count" "$fragment_count" "$redirect_count" "$plan_count"
