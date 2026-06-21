@@ -2,8 +2,8 @@
 
 ## 2026-06-21
 
-- Hardened all eight Make gates against `MAKEFILE_LIST` and `REPO_ROOT`
-  redirection without changing mirrored content or live refresh semantics.
+- Hardened all eight Make gates against file-list, root, and shell redirection
+  without changing mirrored content or live refresh semantics.
 
 ## 2026-06-19
 

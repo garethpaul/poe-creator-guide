@@ -529,20 +529,26 @@ for contract in \
 done
 
 for contract in \
+  'override SHELL := /bin/sh' \
+  'override .SHELLFLAGS := -c' \
+  '$(error MAKEFILES must be empty; repository verification requires this Makefile to be loaded alone)' \
+  'override MAKEFILES :=' \
   'ifneq ($(origin MAKEFILE_LIST),file)' \
   '$(error MAKEFILE_LIST must not be overridden)' \
   'override REPO_ROOT := $(shell path=' \
+  'export REPO_ROOT' \
+  '$(error repository Makefile path could not be resolved)' \
   '/usr/bin/dirname' \
   '/bin/pwd -P' \
   'root-test:' \
-  'cd "$(REPO_ROOT)" && scripts/test-makefile-root.sh' \
+  'cd "$$REPO_ROOT" && scripts/test-makefile-root.sh' \
   'verify: lint test build root-test' \
-  'cd "$(REPO_ROOT)" && scripts/check-source-availability.sh' \
-  'cd "$(REPO_ROOT)" && scripts/record-mirror-refresh.sh "$(SLUG)" "$(VERIFIED_AT)"' \
-  'cd "$(REPO_ROOT)" && scripts/check-docs-index.sh' \
-  'cd "$(REPO_ROOT)" && scripts/test-docs-index.sh' \
-  'cd "$(REPO_ROOT)" && scripts/test-source-availability.sh' \
-  'cd "$(REPO_ROOT)" && scripts/test-mirror-refresh.sh'; do
+  'cd "$$REPO_ROOT" && scripts/check-source-availability.sh' \
+  'cd "$$REPO_ROOT" && scripts/record-mirror-refresh.sh "$(SLUG)" "$(VERIFIED_AT)"' \
+  'cd "$$REPO_ROOT" && scripts/check-docs-index.sh' \
+  'cd "$$REPO_ROOT" && scripts/test-docs-index.sh' \
+  'cd "$$REPO_ROOT" && scripts/test-source-availability.sh' \
+  'cd "$$REPO_ROOT" && scripts/test-mirror-refresh.sh'; do
   if ! grep -Fq "$contract" "$makefile"; then
     fail "$makefile must remain caller-directory independent: $contract"
   fi
@@ -550,8 +556,9 @@ done
 
 for root_test_contract in \
   'Poe creator' \
-  '24 target/override cases' \
-  '2 MAKEFILE_LIST rejection cases' \
+  '56 executed target/authority cases' \
+  '1 MAKEFILES rejection' \
+  '1 multi-Makefile rejection' \
   'MAKEFILE_LIST must not be overridden'; do
   if ! grep -Fq "$root_test_contract" "$ROOT_DIR/scripts/test-makefile-root.sh"; then
     printf '%s\n' "Makefile root test must preserve: $root_test_contract" >&2

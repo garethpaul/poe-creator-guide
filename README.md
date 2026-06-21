@@ -137,7 +137,7 @@ When the required SDK or runtime is unavailable, use static checks and source re
 
 ## Maintenance Notes
 
-- Make gates reject caller-controlled `MAKEFILE_LIST` and `REPO_ROOT` values,
+- Make gates reject caller-controlled file-list, root, and shell authority,
   including for the opt-in live audit and refresh recorder.
 
 - See `SECURITY.md` for vulnerability reporting and safe research guidance.
