@@ -1,5 +1,10 @@
 # Changes
 
+## 2026-06-21
+
+- Hardened all eight Make gates against file-list, root, and shell redirection
+  without changing mirrored content or live refresh semantics.
+
 ## 2026-06-19
 
 - Rejected unexpected hosted files and symbolic links under `docs/` so the
