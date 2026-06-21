@@ -23,6 +23,7 @@ docs_index_tests="scripts/test-docs-index.sh"
 source_availability_tests="scripts/test-source-availability.sh"
 mirror_refresh_script="scripts/record-mirror-refresh.sh"
 mirror_refresh_tests="scripts/test-mirror-refresh.sh"
+make_root_tests="scripts/test-makefile-root.sh"
 iso_date_helper="scripts/iso-date.sh"
 source_url_helper="scripts/source-url.sh"
 source_manifest_plan="docs/plans/2026-06-12-canonical-source-manifest.md"
@@ -33,6 +34,7 @@ location_independent_make_plan="docs/plans/2026-06-14-location-independent-make.
 calendar_date_plan="docs/plans/2026-06-15-calendar-date-validation.md"
 live_audit_boundary_plan="docs/plans/2026-06-17-live-audit-manifest-boundary.md"
 mirror_symlink_plan="docs/plans/2026-06-17-mirror-symlink-boundary.md"
+safe_make_root_plan="docs/plans/2026-06-21-safe-make-root.md"
 makefile="Makefile"
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
@@ -477,7 +479,7 @@ else
   done
 fi
 
-for required_path in "$mirror_refresh_script" "$mirror_refresh_tests" "$mirror_refresh_plan"; do
+for required_path in "$mirror_refresh_script" "$mirror_refresh_tests" "$mirror_refresh_plan" "$make_root_tests" "$safe_make_root_plan"; do
   if [ ! -f "$required_path" ]; then
     fail "$required_path is missing"
   fi
@@ -516,7 +518,7 @@ if [ -f "$mirror_refresh_tests" ]; then
 fi
 
 for contract in \
-  '.PHONY: check check-sources record-refresh lint test build verify' \
+  '.PHONY: check check-sources record-refresh lint test build root-test verify' \
   'record-refresh:' \
   'scripts/record-mirror-refresh.sh "$(SLUG)" "$(VERIFIED_AT)"' \
   'scripts/test-docs-index.sh' \
@@ -527,7 +529,14 @@ for contract in \
 done
 
 for contract in \
-  'override REPO_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))' \
+  'ifneq ($(origin MAKEFILE_LIST),file)' \
+  '$(error MAKEFILE_LIST must not be overridden)' \
+  'override REPO_ROOT := $(shell path=' \
+  '/usr/bin/dirname' \
+  '/bin/pwd -P' \
+  'root-test:' \
+  'cd "$(REPO_ROOT)" && scripts/test-makefile-root.sh' \
+  'verify: lint test build root-test' \
   'cd "$(REPO_ROOT)" && scripts/check-source-availability.sh' \
   'cd "$(REPO_ROOT)" && scripts/record-mirror-refresh.sh "$(SLUG)" "$(VERIFIED_AT)"' \
   'cd "$(REPO_ROOT)" && scripts/check-docs-index.sh' \
@@ -536,6 +545,17 @@ for contract in \
   'cd "$(REPO_ROOT)" && scripts/test-mirror-refresh.sh'; do
   if ! grep -Fq "$contract" "$makefile"; then
     fail "$makefile must remain caller-directory independent: $contract"
+  fi
+done
+
+for root_test_contract in \
+  'Poe creator' \
+  '24 target/override cases' \
+  '2 MAKEFILE_LIST rejection cases' \
+  'MAKEFILE_LIST must not be overridden'; do
+  if ! grep -Fq "$root_test_contract" "$ROOT_DIR/scripts/test-makefile-root.sh"; then
+    printf '%s\n' "Makefile root test must preserve: $root_test_contract" >&2
+    exit 1
   fi
 done
 
