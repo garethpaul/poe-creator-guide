@@ -67,7 +67,7 @@ navigation cannot bypass validated `/docs/...` paths.
 The hosted validation workflow uses read-only repository access, a pinned
 checkout action with credential persistence disabled, and the dependency-free
 offline docs gate to reduce CI supply-chain and credential exposure.
-Reject unexpected hosted files, symbolic links, and raw active Markdown HTML
+Reject unexpected hosted files, symbolic links, hard links, and raw active Markdown HTML
 outside fenced examples so the static mirror cannot publish unreviewed active
 content alongside reviewed documentation.
 Canonical Poe source URLs are validated with a shared helper before offline

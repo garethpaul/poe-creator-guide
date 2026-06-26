@@ -5,6 +5,7 @@ ROOT_DIR=${POE_CREATOR_GUIDE_ROOT:-$(CDPATH=; cd -- "$(dirname -- "$0")/.." && p
 MANIFEST="$ROOT_DIR/docs/sources.tsv"
 . "$ROOT_DIR/scripts/iso-date.sh"
 . "$ROOT_DIR/scripts/source-url.sh"
+. "$ROOT_DIR/scripts/file-link-count.sh"
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -38,6 +39,8 @@ fi
 mirror="$ROOT_DIR/docs/$slug.md"
 [ ! -L "$mirror" ] || fail "mirror must not be a symbolic link: docs/$slug.md"
 [ -f "$mirror" ] || fail "mirror is missing: docs/$slug.md"
+mirror_link_count=$(file_link_count "$mirror") || fail "stat is required to verify mirror link ownership"
+[ "$mirror_link_count" -eq 1 ] || fail "mirror must not be hard linked: docs/$slug.md"
 
 row_count=$(awk -F '\t' -v slug="$slug" '$1 == slug { count += 1 } END { print count + 0 }' "$MANIFEST")
 [ "$row_count" -eq 1 ] || fail "source manifest must contain exactly one row for: $slug"
@@ -52,6 +55,8 @@ first_line=$(sed -n '1p' "$mirror")
   fail "mirror must keep the canonical source comment on its first line: $expected_comment"
 
 content_sha256=$(sha256_file "$mirror")
+mirror_link_count=$(file_link_count "$mirror") || fail "stat is required to recheck mirror link ownership"
+[ "$mirror_link_count" -eq 1 ] || fail "mirror became hard linked while hashing: docs/$slug.md"
 temporary=$(mktemp "$ROOT_DIR/docs/.sources.tsv.XXXXXX")
 trap 'rm -f "$temporary"' EXIT HUP INT TERM
 

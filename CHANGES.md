@@ -1,5 +1,24 @@
 # Changes
 
+## 2026-06-26 14:51 PDT - P1 - Bind hosted docs to owned inodes
+
+- Summary: rejected hard-linked hosted files and mirrored source pages so
+  offline checks, opt-in live audits, and refresh recording cannot trust an
+  externally mutable inode alias.
+- Files: added `scripts/file-link-count.sh`, tightened the three mirror
+  consumers, expanded focused fixtures, and documented the ownership boundary.
+- Tests: the three focused suites failed before implementation; all focused
+  suites, six hostile mutations, 56 Make authority cases, root and external
+  `make check`, shell syntax, changed-script ShellCheck, strict Git object
+  validation, and secret/conflict scans passed after implementation.
+- Findings: symbolic-link rejection alone did not establish exclusive local
+  ownership because a regular file with link count greater than one still
+  passed every fingerprint check.
+- Blockers: Codex review may remain unavailable because prior attempts return
+  HTTP 401; skip after one attempt if unchanged.
+- Next action: open the focused PR, attempt Codex review once, and merge only an
+  exact hosted-green head.
+
 ## 2026-06-21
 
 - Hardened all eight Make gates against file-list, root, and shell redirection

@@ -6,6 +6,7 @@ ROOT_DIR=$(CDPATH=; cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$ROOT_DIR"
 . scripts/iso-date.sh
 . scripts/source-url.sh
+. scripts/file-link-count.sh
 
 missing=0
 count=0
@@ -23,9 +24,11 @@ docs_index_tests="scripts/test-docs-index.sh"
 source_availability_tests="scripts/test-source-availability.sh"
 mirror_refresh_script="scripts/record-mirror-refresh.sh"
 mirror_refresh_tests="scripts/test-mirror-refresh.sh"
+hard_link_mutation_tests="scripts/test-hard-link-mutations.sh"
 make_root_tests="scripts/test-makefile-root.sh"
 iso_date_helper="scripts/iso-date.sh"
 source_url_helper="scripts/source-url.sh"
+file_link_count_helper="scripts/file-link-count.sh"
 source_manifest_plan="docs/plans/2026-06-12-canonical-source-manifest.md"
 content_fingerprint_plan="docs/plans/2026-06-13-mirrored-content-fingerprints.md"
 source_availability_test_plan="docs/plans/2026-06-13-live-source-audit-tests.md"
@@ -35,6 +38,7 @@ calendar_date_plan="docs/plans/2026-06-15-calendar-date-validation.md"
 live_audit_boundary_plan="docs/plans/2026-06-17-live-audit-manifest-boundary.md"
 mirror_symlink_plan="docs/plans/2026-06-17-mirror-symlink-boundary.md"
 safe_make_root_plan="docs/plans/2026-06-21-safe-make-root.md"
+hard_link_plan="docs/plans/2026-06-26-hard-link-ownership.md"
 makefile="Makefile"
 llms_url_plan="docs/plans/2026-06-09-llms-url-deduplication.md"
 index_source_pair_plan="docs/plans/2026-06-09-index-source-pair-validation.md"
@@ -145,6 +149,18 @@ if [ -n "$unexpected_docs_symlinks" ]; then
   fail_each_line "unexpected symbolic link under docs/: " "$unexpected_docs_symlinks"
 fi
 
+hard_linked_docs_files=$(
+  find docs -type f | sort | while IFS= read -r docs_file; do
+    docs_link_count=$(file_link_count "$docs_file") || exit 2
+    if [ "$docs_link_count" -ne 1 ]; then
+      printf '%s\n' "$docs_file"
+    fi
+  done
+) || fail "stat is required to verify hosted docs link ownership"
+if [ -n "$hard_linked_docs_files" ]; then
+  fail_each_line "hard-linked file under docs/: " "$hard_linked_docs_files"
+fi
+
 if [ ! -f "$manifest" ]; then
   fail "$manifest is missing"
 else
@@ -186,10 +202,18 @@ else
       fail "$manifest references missing mirror: docs/$slug.md"
       continue
     fi
+    mirror_link_count=$(file_link_count "docs/$slug.md") || fail "stat is required to verify mirror link ownership"
+    if [ "$mirror_link_count" -ne 1 ]; then
+      fail "$manifest references hard-linked mirror: docs/$slug.md"
+    fi
     if [ "$hash_tool_available" -eq 0 ]; then
       continue
     fi
     actual_sha256=$(sha256_file "docs/$slug.md")
+    mirror_link_count=$(file_link_count "docs/$slug.md") || fail "stat is required to recheck mirror link ownership"
+    if [ "$mirror_link_count" -ne 1 ]; then
+      fail "$manifest mirror became hard linked while hashing: docs/$slug.md"
+    fi
     if [ "$actual_sha256" != "$content_sha256" ]; then
       fail "$manifest fingerprint mismatch for docs/$slug.md: expected $content_sha256, got $actual_sha256"
     else
@@ -230,6 +254,19 @@ else
   done
 fi
 
+if [ ! -f "$file_link_count_helper" ]; then
+  fail "$file_link_count_helper is missing"
+else
+  for link_count_contract in \
+    'file_link_count()' \
+    "stat -c '%h'" \
+    "stat -f '%l'"; do
+    if ! grep -Fq "$link_count_contract" "$file_link_count_helper"; then
+      fail "$file_link_count_helper must preserve portable link-count validation: $link_count_contract"
+    fi
+  done
+fi
+
 for date_consumer in "$source_availability_script" "$mirror_refresh_script" scripts/check-docs-index.sh; do
   if ! grep -Fq 'is_valid_iso_date' "$date_consumer"; then
     fail "$date_consumer must use the shared calendar-date validator"
@@ -239,6 +276,12 @@ done
 for source_url_consumer in "$source_availability_script" "$mirror_refresh_script" scripts/check-docs-index.sh; do
   if ! grep -Fq 'is_canonical_poe_docs_url' "$source_url_consumer"; then
     fail "$source_url_consumer must use the shared canonical source URL validator"
+  fi
+done
+
+for link_count_consumer in "$source_availability_script" "$mirror_refresh_script" scripts/check-docs-index.sh; do
+  if ! grep -Fq 'file_link_count' "$link_count_consumer"; then
+    fail "$link_count_consumer must use the shared file link-count validator"
   fi
 done
 
@@ -274,6 +317,7 @@ for preflight_contract in \
   'source manifest has an invalid slug' \
   'source manifest has a non-canonical source URL' \
   'source manifest references symbolic link mirror' \
+  'source manifest references hard-linked mirror' \
   'source manifest references missing mirror'; do
   if ! grep -Fq "$preflight_contract" "$source_availability_script"; then
     fail "$source_availability_script must preserve manifest preflight validation: $preflight_contract"
@@ -367,6 +411,7 @@ else
     'reject dot-segment source URLs' \
     'reject missing mirrors' \
     'reject symbolic link mirrors' \
+    'reject hard-linked mirrors' \
     'reject malformed fingerprints' \
     'reject duplicate slugs' \
     'reject duplicate canonical URLs' \
@@ -388,6 +433,13 @@ done
 
 if ! grep -Fq 'symbolic link mirrors must be rejected' "$mirror_refresh_tests"; then
   fail "$mirror_refresh_tests must preserve mirror symlink coverage"
+fi
+if ! grep -Fq 'hard-linked mirrors must be rejected' "$mirror_refresh_tests"; then
+  fail "$mirror_refresh_tests must preserve mirror hard-link coverage"
+fi
+
+if ! grep -Fq 'hard-linked hosted docs files must be rejected' "$docs_index_tests"; then
+  fail "$docs_index_tests must preserve hosted hard-link coverage"
 fi
 
 if [ ! -f "$live_audit_boundary_plan" ]; then
@@ -418,8 +470,28 @@ else
   done
 fi
 
+if [ ! -f "$hard_link_plan" ]; then
+  fail "$hard_link_plan is missing"
+else
+  for evidence in \
+    'Status: Completed' \
+    '## Verification' \
+    'hard-linked hosted docs files' \
+    'make check'; do
+    if ! grep -Fqi "$evidence" "$hard_link_plan"; then
+      fail "$hard_link_plan must preserve completed evidence: $evidence"
+    fi
+  done
+fi
+
 if ! grep -Fq 'scripts/test-source-availability.sh' "$makefile"; then
   fail "$makefile test gate must execute the offline live source audit tests"
+fi
+if [ ! -x "$hard_link_mutation_tests" ]; then
+  fail "$hard_link_mutation_tests must exist and be executable"
+fi
+if ! grep -Fq 'scripts/test-hard-link-mutations.sh' "$makefile"; then
+  fail "$makefile test gate must execute the hard-link mutation tests"
 fi
 
 if [ ! -f "$source_availability_test_plan" ]; then

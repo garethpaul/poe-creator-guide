@@ -48,6 +48,8 @@ Priority:
   without automatic prose replacement
 - Keep hosted `docs/` content limited to reviewed Markdown mirrors, completed
   plans, the source manifest, and approved static assets
+- Keep hosted files and reviewed mirrors singly linked so fingerprints and
+  refresh decisions cannot alias externally mutable inodes
 - Reject raw active HTML outside fenced Markdown examples and reject
   dot-segment or encoded canonical source URL paths
 

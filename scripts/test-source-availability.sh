@@ -50,6 +50,7 @@ mkdir -p "$FIXTURE_ROOT/docs" "$FIXTURE_ROOT/scripts" "$FAKE_BIN" "$AUDIT_TMP"
 cp "$ROOT_DIR/scripts/check-source-availability.sh" "$FIXTURE_ROOT/scripts/"
 cp "$ROOT_DIR/scripts/iso-date.sh" "$FIXTURE_ROOT/scripts/"
 cp "$ROOT_DIR/scripts/source-url.sh" "$FIXTURE_ROOT/scripts/"
+cp "$ROOT_DIR/scripts/file-link-count.sh" "$FIXTURE_ROOT/scripts/"
 chmod +x "$FIXTURE_ROOT/scripts/check-source-availability.sh"
 printf '%s\n' '<!-- Source: test fixture -->' '# Test source' > "$FIXTURE_ROOT/docs/test-source.md"
 content_sha256=$(sha256_file "$FIXTURE_ROOT/docs/test-source.md")
@@ -172,6 +173,15 @@ printf 'test-source\t%s\t2026-06-13\t%s\n' "$SOURCE_URL" "$external_sha256" > "$
 assert_preflight_rejected "source manifest references symbolic link mirror: docs/test-source.md" \
   "the live audit must reject symbolic link mirrors"
 rm -f "$FIXTURE_ROOT/docs/test-source.md"
+printf '%s\n' '<!-- Source: test fixture -->' '# Test source' > "$FIXTURE_ROOT/docs/test-source.md"
+
+cp "$FIXTURE_ROOT/docs/test-source.md" "$WORK_DIR/hard-linked-source.md"
+rm "$FIXTURE_ROOT/docs/test-source.md"
+ln "$WORK_DIR/hard-linked-source.md" "$FIXTURE_ROOT/docs/test-source.md"
+write_valid_manifest
+assert_preflight_rejected "source manifest references hard-linked mirror: docs/test-source.md" \
+  "the live audit must reject hard-linked mirrors"
+rm "$FIXTURE_ROOT/docs/test-source.md"
 printf '%s\n' '<!-- Source: test fixture -->' '# Test source' > "$FIXTURE_ROOT/docs/test-source.md"
 
 printf 'test-source\t%s\t2026-06-13\tinvalid\n' "$SOURCE_URL" > "$FIXTURE_ROOT/docs/sources.tsv"
