@@ -5,6 +5,7 @@ ROOT_DIR=$(CDPATH=; cd -- "$(dirname -- "$0")/.." && pwd)
 MANIFEST="$ROOT_DIR/docs/sources.tsv"
 . "$ROOT_DIR/scripts/iso-date.sh"
 . "$ROOT_DIR/scripts/source-url.sh"
+. "$ROOT_DIR/scripts/file-link-count.sh"
 
 fail() {
   printf '%s\n' "$1" >&2
@@ -56,6 +57,8 @@ while IFS="$tab" read -r slug source_url verified_at content_sha256; do
   mirror="$ROOT_DIR/docs/$slug.md"
   [ ! -L "$mirror" ] || fail "source manifest references symbolic link mirror: docs/$slug.md"
   [ -f "$mirror" ] || fail "source manifest references missing mirror: docs/$slug.md"
+  mirror_link_count=$(file_link_count "$mirror") || fail "stat is required to verify mirror link ownership."
+  [ "$mirror_link_count" -eq 1 ] || fail "source manifest references hard-linked mirror: docs/$slug.md"
   if ! printf '%s\n' "$content_sha256" | grep -Eq '^[0-9a-f]{64}$'; then
     fail "$slug has an invalid SHA-256 fingerprint: $content_sha256"
   fi
@@ -65,6 +68,8 @@ while IFS="$tab" read -r slug source_url verified_at content_sha256; do
   if [ "$actual_sha256" != "$content_sha256" ]; then
     fail "$slug mirror fingerprint mismatch: expected $content_sha256, got $actual_sha256"
   fi
+  mirror_link_count=$(file_link_count "$mirror") || fail "stat is required to recheck mirror link ownership."
+  [ "$mirror_link_count" -eq 1 ] || fail "source manifest mirror became hard linked while hashing: docs/$slug.md"
   if ! is_valid_iso_date "$verified_at"; then
     fail "$slug has an invalid verification date: $verified_at"
   fi

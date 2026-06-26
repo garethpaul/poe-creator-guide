@@ -49,6 +49,8 @@
 - Keep mirrored local links on validated `/docs/...` paths and preserve valid
   heading fragments when guide sections move.
 - Keep hosted checkout singular, pinned, read-only, and credential-free.
+- Keep hosted docs and reviewed mirrors as singly linked regular files; reject
+  symlink and hard-link aliases before hashing or refresh recording.
 
 ## Agent workflow
 

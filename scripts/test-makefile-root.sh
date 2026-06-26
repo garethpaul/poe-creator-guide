@@ -34,6 +34,7 @@ for script in \
   test-docs-index.sh \
   test-source-availability.sh \
   test-mirror-refresh.sh \
+  test-hard-link-mutations.sh \
   test-makefile-root.sh; do
   write_logger "$CHECKOUT/scripts/$script"
 done

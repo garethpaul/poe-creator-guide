@@ -10,6 +10,7 @@ mkdir -p "$FIXTURE_ROOT/docs" "$FIXTURE_ROOT/scripts"
 cp "$ROOT_DIR/scripts/record-mirror-refresh.sh" "$FIXTURE_ROOT/scripts/"
 cp "$ROOT_DIR/scripts/iso-date.sh" "$FIXTURE_ROOT/scripts/"
 cp "$ROOT_DIR/scripts/source-url.sh" "$FIXTURE_ROOT/scripts/"
+cp "$ROOT_DIR/scripts/file-link-count.sh" "$FIXTURE_ROOT/scripts/"
 chmod +x "$FIXTURE_ROOT/scripts/record-mirror-refresh.sh"
 
 fail() {
@@ -51,6 +52,15 @@ ln -s "$WORK_DIR/external-source.md" "$FIXTURE_ROOT/docs/test-source.md"
 if run_recorder test-source 2026-06-14 >/dev/null 2>&1; then fail "symbolic link mirrors must be rejected"; fi
 [ "$(cat "$FIXTURE_ROOT/docs/sources.tsv")" = "$manifest_before_symlink" ] || fail "symlink rejection must not change the manifest"
 rm -f "$FIXTURE_ROOT/docs/test-source.md"
+printf '%s\n' "<!-- Source: $SOURCE_URL -->" '# Refreshed guide' > "$FIXTURE_ROOT/docs/test-source.md"
+
+cp "$FIXTURE_ROOT/docs/test-source.md" "$WORK_DIR/hard-linked-source.md"
+rm "$FIXTURE_ROOT/docs/test-source.md"
+ln "$WORK_DIR/hard-linked-source.md" "$FIXTURE_ROOT/docs/test-source.md"
+manifest_before_hard_link=$(cat "$FIXTURE_ROOT/docs/sources.tsv")
+if run_recorder test-source 2026-06-14 >/dev/null 2>&1; then fail "hard-linked mirrors must be rejected"; fi
+[ "$(cat "$FIXTURE_ROOT/docs/sources.tsv")" = "$manifest_before_hard_link" ] || fail "hard-link rejection must not change the manifest"
+rm "$FIXTURE_ROOT/docs/test-source.md"
 printf '%s\n' "<!-- Source: $SOURCE_URL -->" '# Refreshed guide' > "$FIXTURE_ROOT/docs/test-source.md"
 
 if run_recorder '../escape' 2026-06-13 >/dev/null 2>&1; then fail "invalid slugs must be rejected"; fi

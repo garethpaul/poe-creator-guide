@@ -46,6 +46,16 @@ fi
 assert_contains "$output" "unexpected file under docs/: docs/unreviewed.html"
 rm "$FIXTURE_ROOT/docs/unreviewed.html"
 
+cp "$FIXTURE_ROOT/docs/welcome-to-poe-for-creators.md" "$WORK_DIR/external-mirror.md"
+rm "$FIXTURE_ROOT/docs/welcome-to-poe-for-creators.md"
+ln "$WORK_DIR/external-mirror.md" "$FIXTURE_ROOT/docs/welcome-to-poe-for-creators.md"
+if output=$(run_checker); then
+  fail "hard-linked hosted docs files must be rejected"
+fi
+assert_contains "$output" "hard-linked file under docs/: docs/welcome-to-poe-for-creators.md"
+rm "$FIXTURE_ROOT/docs/welcome-to-poe-for-creators.md"
+cp "$WORK_DIR/external-mirror.md" "$FIXTURE_ROOT/docs/welcome-to-poe-for-creators.md"
+
 printf '%s\n' '<script>alert("active")</script>' >> "$FIXTURE_ROOT/docs/welcome-to-poe-for-creators.md"
 "$FIXTURE_ROOT/scripts/record-mirror-refresh.sh" welcome-to-poe-for-creators 2026-06-19 >/dev/null
 if output=$(run_checker); then

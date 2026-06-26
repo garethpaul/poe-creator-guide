@@ -59,7 +59,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Run `make check` or `make verify` before committing documentation index changes.
 - Run `make check-sources` when intentionally auditing current upstream source
   availability; it validates the complete manifest and every local fingerprint
-  against regular, non-symlink mirrors before contacting Poe, then follows
+  against regular, non-symlink, singly linked mirrors before contacting Poe, then follows
   redirects and requires each canonical manifest URL to return HTTP 200 without
   redirecting.
 - Run `make record-refresh SLUG=<slug> VERIFIED_AT=<YYYY-MM-DD>` after manually
@@ -74,7 +74,7 @@ The setup commands above are derived from repository files. Legacy mobile, Pytho
 - Run `make build` for the static documentation build gate; it uses the same
   offline docs validator as `make lint`.
 - The verification gate runs `scripts/check-docs-index.sh`, which confirms every `docs/*.md` page is represented by both `llms.txt` and `index.md`, each mirrored page matches its reviewed SHA-256 fingerprint and source attribution, each page's source URL remains visible in `index.md`, each index entry keeps the local page link paired with its canonical source link, local `/docs/<slug>` links point to checked-in pages, and `docs/plans/` contains a completed maintenance plan.
-- The same gate rejects unexpected hosted files or symbolic links under
+- The same gate rejects unexpected hosted files, symbolic links, or hard links under
   `docs/` and rejects raw active Markdown HTML outside fenced code blocks.
 - The same gate validates canonical Poe source URLs with a shared helper so
   dot segments, encoded paths, query strings, fragments, and non-docs hosts do
@@ -111,7 +111,7 @@ Use this mirror refresh process for one reviewed page at a time:
    changes. Preserve the exact canonical `<!-- Source: ... -->` comment as the
    first line.
 3. Run `make record-refresh SLUG=<slug> VERIFIED_AT=<YYYY-MM-DD>`. The recorder
-   validates the slug, date, unique manifest row, regular non-symlink mirror,
+   validates the slug, date, unique manifest row, regular non-symlink singly linked mirror,
    and attribution, then atomically updates only that row's date and SHA-256
    fingerprint.
 4. Inspect the mirror and manifest diff and run `make check`. Run
@@ -172,6 +172,8 @@ When the required SDK or runtime is unavailable, use static checks and source re
   mapping and the opt-in live availability audit.
 - See `docs/plans/2026-06-19-hosted-content-boundary.md` for the hosted-file,
   active-content, and canonical source URL path boundary.
+- See `docs/plans/2026-06-26-hard-link-ownership.md` for the hosted-file and
+  reviewed-mirror hard-link ownership boundary.
 
 ## Contributing
 
